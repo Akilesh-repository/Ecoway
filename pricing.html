@@ -182,18 +182,15 @@
 </head>
 <body>
 
-    <!-- NAVBAR START -->
     <nav class="navbar">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
             
-            <!-- Left Side: Logo -->
             <div class="flex items-center flex-1">
                 <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
                     EcoWay
                 </a>
             </div>
             
-            <!-- Center: Navigation Links -->
             <div class="hidden xl:flex justify-center items-center gap-2">
                 <div class="dropdown">
                     <div class="nav-link">Home <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
@@ -221,7 +218,6 @@
                 </div>
             </div>
 
-            <!-- Right Side: Buttons & Toggles -->
             <div class="hidden xl:flex items-center justify-end flex-1 gap-3">
                 <a href="login.html" class="btn btn-outline !py-2 !px-5 !text-[11px]">Login</a> 
                 <a href="register.html" class="btn btn-solid !py-2 !px-5 !text-[11px]">Register</a>
@@ -235,7 +231,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Hamburger -->
             <div class="xl:hidden flex items-center justify-end flex-1">
                 <button id="mobile-btn" class="w-10 h-10 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-main)] hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">
                     <i class="fas fa-bars text-lg"></i>
@@ -244,9 +239,6 @@
 
         </div>
     </nav>
-    <!-- NAVBAR END -->
-
-    <!-- HAMBURGER MENU START -->
     <div class="drawer-overlay" id="drawer-overlay"></div>
 
     <div class="fullscreen-menu" id="fullscreen-menu">
@@ -293,21 +285,15 @@
             </div>
         </div>
     </div>
-    <!-- HAMBURGER MENU END -->
-
-    <!-- HERO BANNER START -->
     <section class="relative w-full min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-12">
         
-        <!-- Full Background Image & Overlays -->
         <div class="absolute inset-0 z-0">
             <img src="images/pexels-pricing-bg.jpg" alt="Corporate Business Finance Pricing" class="w-full h-full object-cover object-center animate-zoom" onerror="this.src='images/pexels-shvets-production-7512889.jpg'" />
             <div class="absolute inset-0 bg-slate-900/80"></div>
         </div>
 
-        <!-- Centered Content -->
         <div class="relative z-10 w-full max-w-5xl mx-auto px-6 text-center mt-auto mb-auto">
             
-            <!-- Badge -->
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm">
                 <i class="fas fa-tags"></i> Transparent & Flexible Pricing
             </div>
@@ -322,7 +308,6 @@
                 Choose the right IT asset disposition and e-waste recycling plan tailored to your organization's scale, budget, and compliance requirements.
             </p>
 
-            <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-sm mx-auto sm:max-w-none">
                 <a href="#pricing-tables" class="btn btn-solid w-full sm:w-auto group !py-3 sm:!py-4 !px-8 text-sm flex justify-center items-center gap-3">
                     <span>View Plans</span>
@@ -335,13 +320,9 @@
 
         </div>
     </section>
-    <!-- HERO BANNER END -->
-
-    <!-- PRICING SECTION 1: MAIN ITAD PACKAGES -->
     <section id="pricing-tables" class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
         <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
             
-            <!-- Section Header -->
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] block mb-4">Pricing Packages</span>
                 <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-6">
@@ -350,10 +331,8 @@
                 <p class="text-[var(--text-muted)] text-base">Select the tier that best fits your organization's device lifecycle, logistics scale, and data security requirements.</p>
             </div>
 
-            <!-- Pricing Grid 1 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-md lg:max-w-none mx-auto">
                 
-                <!-- Pricing Card 1 -->
                 <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded p-8 flex flex-col hover:shadow-xl transition-all duration-300">
                     <h3 class="text-xl font-bold text-[var(--text-main)] mb-2">SMB Starter</h3>
                     <div class="text-[var(--text-muted)] text-sm mb-6 border-b border-[var(--border-color)] pb-6">Perfect for small businesses with occasional hardware refresh cycles.</div>
@@ -380,8 +359,7 @@
                     <a href="contact.html" class="btn btn-outline w-full !py-3 rounded mt-auto">Get Started</a>
                 </div>
 
-                <!-- Pricing Card 2 (Highlighted) -->
-                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform md:-translate-y-4">
+                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform lg:-translate-y-4">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--accent-color)] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md">
                         Most Popular
                     </div>
@@ -411,7 +389,6 @@
                     <a href="contact.html" class="btn btn-solid w-full !py-3 rounded mt-auto">Choose Pro</a>
                 </div>
 
-                <!-- Pricing Card 3 -->
                 <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded p-8 flex flex-col hover:shadow-xl transition-all duration-300">
                     <h3 class="text-xl font-bold text-[var(--text-main)] mb-2">Enterprise Custom</h3>
                     <div class="text-[var(--text-muted)] text-sm mb-6 border-b border-[var(--border-color)] pb-6">Bespoke logistics for large-scale data centers and national branches.</div>
@@ -442,7 +419,6 @@
         </div>
     </section>
 
-    <!-- PRICING SECTION 2: DATA CENTER DECOMMISSIONING -->
     <section class="py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-color)]">
         <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
             
@@ -454,7 +430,7 @@
                 <p class="text-[var(--text-muted)] text-base">Comprehensive tear-down, secure logistics, and asset value recovery for large-scale server infrastructures.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-md lg:max-w-none mx-auto">
                 
                 <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded p-8 flex flex-col hover:shadow-xl transition-all duration-300">
                     <h3 class="text-xl font-bold text-[var(--text-main)] mb-2">Single Rack</h3>
@@ -479,7 +455,7 @@
                     <a href="contact.html" class="btn btn-outline w-full !py-3 rounded mt-auto">Book Service</a>
                 </div>
 
-                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform md:-translate-y-4">
+                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform lg:-translate-y-4">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--accent-color)] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md">
                         Best Value
                     </div>
@@ -536,7 +512,6 @@
         </div>
     </section>
 
-    <!-- PRICING SECTION 3: A LA CARTE DESTRUCTION -->
     <section class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
         <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
             
@@ -548,7 +523,7 @@
                 <p class="text-[var(--text-muted)] text-base">Standalone data destruction services priced per drive, available with or without full ITAD logistics.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-md lg:max-w-none mx-auto">
                 
                 <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded p-8 flex flex-col hover:shadow-xl transition-all duration-300">
                     <div class="w-12 h-12 bg-[var(--bg-secondary)] text-[var(--text-main)] rounded-full flex items-center justify-center text-xl mb-4 border border-[var(--border-color)]">
@@ -602,7 +577,7 @@
                     <a href="contact.html" class="btn btn-outline w-full !py-3 rounded mt-auto">Add to Plan</a>
                 </div>
 
-                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform md:-translate-y-4">
+                <div class="bg-[var(--bg-card)] border-2 border-[var(--accent-color)] rounded p-8 flex flex-col shadow-lg relative transform lg:-translate-y-4">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--accent-color)] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md">
                         Maximum Security
                     </div>
@@ -639,7 +614,6 @@
         </div>
     </section>
 
-    <!-- FOOTER START -->
     <footer>
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 pt-4">
@@ -700,8 +674,6 @@
             </div>
         </div>
     </footer>
-    <!-- FOOTER END -->
-
     <script>
         // Drawer Menu Logic
         const mobileBtn = document.getElementById('mobile-btn'); 
