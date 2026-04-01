@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | EcoWay ITAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '.dark-mode'],
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        orange: {
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* =========================================
+           CORE STYLES & VARIABLES
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body { 
+            min-height: 100%;
+            min-height: 100dvh; 
+            overflow-x: hidden; 
+            background-color: var(--dash-bg);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --dash-bg: #F1F5F9; 
+            --text-main: #0F172A; 
+            --text-muted: #64748B;
+            --accent-color: #F97316; 
+            --accent-dark: #EA580C;  
+            --border-color: #CBD5E1;
+            
+            /* Sidebar Variables - WHITE THEME */
+            --sidebar-bg: #ffffff; 
+            --sidebar-text: #0F172A;
+            --sidebar-muted: #64748B;
+            --sidebar-hover: #F8FAFC;
+            --sidebar-active: rgba(249, 115, 22, 0.08);
+            
+            --sidebar-width: 280px;
+            --card-bg: #ffffff;
+            --card-hover: #fafafa;
+            --radius: 16px; 
+            --shadow: 0 4px 20px -2px rgba(0,0,0,0.05);
+            --shadow-hover: 0 10px 25px -5px rgba(249, 115, 22, 0.15);
+        }
+
+        body.dark-mode {
+            --dash-bg: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-color: #1E293B;
+            --card-bg: #0F172A;
+            --card-hover: #1E293B;
+            --accent-color: #F97316; 
+            --accent-dark: #EA580C;
+            
+            /* Dark Mode Sidebar */
+            --sidebar-bg: #0F172A;
+            --sidebar-text: #F8FAFC;
+            --sidebar-muted: #94A3B8;
+            --sidebar-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-active: rgba(249, 115, 22, 0.15);
+
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            --shadow-hover: 0 10px 25px -5px rgba(251, 146, 60, 0.15);
+        }
+
+        /* RTL SUPPORT */
+        [dir="rtl"] { text-align: right; }
+        [dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+        [dir="rtl"] .mr-3 { margin-left: 0.75rem; margin-right: 0; }
+        [dir="rtl"] .ml-3 { margin-right: 0.75rem; margin-left: 0; }
+        [dir="rtl"] .mr-1 { margin-left: 0.25rem; margin-right: 0; }
+        [dir="rtl"] .mr-2 { margin-left: 0.5rem; margin-right: 0; }
+        
+        /* UI UTILITIES */
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .dash-card:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent-color);
+        }
+        
+        /* LAYOUT */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            height: 100dvh; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 32px 16px;
+            overflow-y: auto; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            color: var(--sidebar-text);
+        }
+        [dir="rtl"] .sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border-color); }
+
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            transition: margin 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+        [dir="rtl"] .main-wrapper { margin-left: 0; margin-right: var(--sidebar-width); }
+
+        .topbar {
+            height: 88px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: var(--dash-bg); 
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .content-area {
+            padding: 0 40px 40px 40px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            [dir="rtl"] .sidebar { transform: translateX(100%); }
+            [dir="rtl"] .sidebar.active { transform: translateX(0); }
+
+            .main-wrapper { 
+                margin-left: 0 !important; 
+                margin-right: 0 !important; 
+                width: 100%; 
+            }
+            .topbar { padding: 0 24px; }
+            .content-area { padding: 0 24px 24px 24px; }
+            
+            .hamburger-btn { display: block !important; }
+        }
+
+        @media (max-width: 640px) {
+            .content-area { padding: 0 16px 24px 16px; }
+            .topbar { padding: 0 16px; height: 72px; }
+            .hero-banner { padding: 24px; text-align: center; }
+            .hero-banner-pattern { display: none; }
+            .hero-banner h1 { font-size: 1.75rem; }
+            .icon-btn { width: 38px !important; height: 38px !important; font-size: 0.9rem; border-radius: 10px !important; }
+        }
+
+        /* OVERLAYS & TOGGLES */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(3px);
+            z-index: 45; display: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+        
+        .hamburger-btn { display: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; background: none; border: none; }
+
+        /* SIDEBAR NAVIGATION */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--sidebar-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: 8px; 
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .nav-item i { width: 24px; font-size: 1.1rem; text-align: center; margin-right: 14px; transition: transform 0.2s; }
+        [dir="rtl"] .nav-item i { margin-right: 0; margin-left: 14px; }
+        
+        .nav-item:hover { color: var(--sidebar-text); background: var(--sidebar-hover); }
+        
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 0 8px 8px 0;
+        }
+        [dir="rtl"] .nav-item.active {
+            border-left: none;
+            border-right: 4px solid var(--accent-color);
+            border-radius: 8px 0 0 8px;
+        }
+        .nav-item.active i { color: var(--accent-color); }
+
+        /* TOPBAR BUTTONS */
+        .icon-btn {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); background: var(--card-bg); 
+            border: 1px solid var(--border-color);
+            cursor: pointer; transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .icon-btn:hover { background: var(--accent-color); color: #FFFFFF; border-color: var(--accent-color); }
+
+        /* FIXED HERO BANNER */
+        .hero-banner {
+            background-color: #0F172A; 
+            color: #ffffff; 
+            border-radius: var(--radius);
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+        body.dark-mode .hero-banner {
+            background-color: #0B1120;
+        }
+        .hero-banner::before {
+            content: ''; position: absolute; right: -10%; top: -50%;
+            width: 400px; height: 400px; background: var(--accent-color);
+            border-radius: 50%; filter: blur(100px); opacity: 0.15;
+        }
+        .hero-banner-pattern {
+            position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
+            background-image: radial-gradient(#ffffff 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* PROGRESS BARS */
+        .progress-bg { width: 100%; background-color: var(--border-color); border-radius: 999px; height: 6px; overflow: hidden; margin-top: 12px; opacity: 0.5; }
+        .progress-fill { background-color: var(--accent-color); height: 100%; border-radius: 999px; transition: width 1s ease-in-out;}
+
+        /* FIXED TABLE & BUTTONS */
+        .clean-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+        [dir="rtl"] .clean-table { text-align: right; }
+        .clean-table th, .clean-table td { white-space: nowrap; }
+        
+        .clean-table th { padding: 16px; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; background: var(--dash-bg); text-transform: uppercase; letter-spacing: 1px; }
+        .clean-table th:first-child { border-radius: 8px 0 0 8px; }
+        .clean-table th:last-child { border-radius: 0 8px 8px 0; }
+        [dir="rtl"] .clean-table th:first-child { border-radius: 0 8px 8px 0; }
+        [dir="rtl"] .clean-table th:last-child { border-radius: 8px 0 0 8px; }
+        
+        .clean-table td { padding: 16px; color: var(--text-main); font-weight: 500; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .clean-table tr:last-child td { border-bottom: none; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px; }
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-info { background: rgba(249, 115, 22, 0.1); color: var(--accent-dark); border: 1px solid rgba(249, 115, 22, 0.2); }
+
+        /* TABLE BUTTONS */
+        .btn-sm { 
+            padding: 0 16px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 155px; 
+            height: 38px;
+            white-space: nowrap; 
+            box-sizing: border-box;
+        }
+        .btn-action { background: var(--accent-color); color: #FFFFFF; border: 1px solid var(--accent-color); }
+        .btn-action:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+        .btn-outline-table { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-outline-table:hover { border-color: var(--text-main); background: var(--dash-bg); }
+        .btn-disabled { background: var(--dash-bg); color: var(--text-muted); border: 1px solid var(--border-color); cursor: not-allowed; opacity: 0.6; }
+
+        /* ACTIVITY FEED UI */
+        .activity-item { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; align-items: flex-start; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; shrink-0; }
+
+        /* TABS LOGIC */
+        .tab-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+        .tab-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
+    <aside class="sidebar" id="sidebar">
+        <div class="mb-12 px-4 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black tracking-tighter text-[var(--text-main)]" style="text-decoration: none;">
+                EcoWay
+            </a>
+        </div>
+        
+        <nav class="flex-grow">
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-3 px-4 text-[var(--text-muted)]">Global Network</p>
+            <a href="#" class="nav-item active tab-btn" data-target="section-dashboard"><i class="fas fa-globe"></i> Network Overview</a>
+            <a href="#" class="nav-item tab-btn" data-target="section-clients">
+                <i class="fas fa-building"></i> Client Accounts 
+                <span class="ml-auto bg-[var(--dash-bg)] text-[var(--text-main)] text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 border border-[var(--border-color)]">128</span>
+            </a>
+            <a href="#" class="nav-item tab-btn" data-target="section-logistics">
+                <i class="fas fa-truck"></i> Fleet & Logistics
+                <span class="ml-auto bg-[var(--accent-color)] text-white text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0">3</span>
+            </a>
+            <a href="#" class="nav-item tab-btn" data-target="section-facilities"><i class="fas fa-microchip"></i> Processing Centers</a>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest mt-10 mb-3 px-4 text-[var(--text-muted)]">Administration</p>
+            <a href="#" class="nav-item tab-btn" data-target="section-reports">
+                <i class="fas fa-chart-bar"></i> Global Reports
+                <span class="ml-auto bg-[var(--dash-bg)] text-[var(--text-main)] text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 border border-[var(--border-color)]">New</span>
+            </a>
+            <a href="#" class="nav-item tab-btn" data-target="section-settings"><i class="fas fa-cogs"></i> System Settings</a>
+            
+            <a href="login.html" class="nav-item mt-10 hover:text-red-500">
+                <i class="fas fa-sign-out-alt"></i> Exit Admin
+            </a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        
+        <header class="topbar">
+            <div class="flex items-center gap-4">
+                <button class="hamburger-btn" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+                
+                <div class="hidden md:flex items-center rounded-lg px-4 py-2.5 w-96 transition-colors focus-within:ring-2 ring-[var(--accent-color)]" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                    <i class="fas fa-search text-[var(--text-muted)] mr-3"></i>
+                    <input type="text" placeholder="Search client ID, vehicle plate, or facility..." class="bg-transparent border-none outline-none w-full text-sm font-medium text-[var(--text-main)] placeholder-[var(--text-muted)]">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-4 md:gap-5">
+                <button class="icon-btn hidden sm:flex" id="rtl-toggle" title="Toggle RTL"><i class="fas fa-align-right"></i></button>
+                <button class="icon-btn" id="theme-toggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+                
+                <div class="relative cursor-pointer group">
+                    <button class="icon-btn relative">
+                        <i class="fas fa-siren-on"></i>
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[var(--card-bg)]"></span>
+                    </button>
+                </div>
+
+                <div class="w-px h-8 mx-1 bg-[var(--border-color)] hidden sm:block"></div>
+                
+                <div class="flex items-center gap-2 cursor-pointer sm:bg-[var(--card-bg)] sm:border border-[var(--border-color)] sm:pl-2 sm:pr-4 sm:py-1.5 rounded-full hover:border-[var(--text-main)] transition-colors shrink-0">
+                    <img src="https://ui-avatars.com/api/?name=Super+Admin&background=F97316&color=FFF&bold=true" alt="Admin" class="w-8 h-8 rounded-full border border-[var(--border-color)] object-cover">
+                    <div class="hidden sm:block text-left">
+                        <p class="text-sm font-bold text-[var(--text-main)] leading-tight"></p>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs text-[var(--text-muted)] ml-1 hidden sm:block"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area">
+            
+            <div id="section-dashboard" class="tab-section active">
+                <div class="hero-banner mb-8 flex flex-col lg:flex-row items-center justify-between gap-6 p-6 sm:p-8 md:p-12">
+                    <div class="hero-banner-pattern"></div>
+                    <div class="relative z-10 w-full lg:w-auto text-center lg:text-left">
+                        <span class="inline-block border border-orange-500/50 bg-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded mb-4">System Operational</span>
+                        <h1 class="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white">Global Network Status</h1>
+                        <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto lg:mx-0 font-medium">All 4 regional processing hubs are online. Currently tracking <strong class="text-[var(--accent-color)]">14 active fleet vehicles</strong> across North America and APAC.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto relative z-10">
+                        <button class="tab-btn w-full sm:w-auto bg-transparent border-2 border-slate-500 text-white hover:bg-slate-800 px-6 py-3 font-bold text-sm uppercase tracking-wide transition-all rounded-md" data-target="section-logistics">View Live Map</button>
+                        <button class="w-full sm:w-auto bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white border-2 border-[var(--accent-color)] hover:border-[var(--accent-dark)] px-6 py-3 font-bold text-sm uppercase tracking-wide shadow-lg transition-all flex items-center justify-center gap-2 rounded-md">
+                            <i class="fas fa-download"></i> Daily Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                    <div class="dash-card p-6 flex flex-col justify-center min-w-0">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] truncate">Value Recovered (YTD)</p>
+                            <i class="fas fa-dollar-sign text-[var(--text-muted)] shrink-0 ml-2"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-[var(--text-main)] mt-1">$4.2M</h3>
+                        <div class="mt-3">
+                            <div class="progress-bg"><div class="progress-fill" style="width: 78%; background-color: #10b981;"></div></div>
+                            <p class="text-[10px] uppercase text-[var(--text-muted)] mt-2 font-bold tracking-widest">+12% vs last quarter</p>
+                        </div>
+                    </div>
+
+                    <div class="dash-card p-6 flex flex-col justify-center min-w-0">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] truncate">E-Waste Diverted</p>
+                            <i class="fas fa-leaf text-[var(--text-muted)] shrink-0 ml-2"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-[var(--text-main)] mt-1">10.5M <span class="text-lg text-[var(--text-muted)]">lbs</span></h3>
+                        <div class="mt-3">
+                            <div class="progress-bg"><div class="progress-fill" style="width: 65%; background-color: #10b981;"></div></div>
+                            <p class="text-[10px] uppercase text-[var(--text-muted)] mt-2 font-bold tracking-widest">Global Network Total</p>
+                        </div>
+                    </div>
+
+                    <div class="dash-card p-6 flex flex-col justify-center min-w-0">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] truncate">Active Fleet Pickups</p>
+                            <i class="fas fa-truck text-[var(--text-muted)] shrink-0 ml-2"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-[var(--text-main)] mt-1">14</h3>
+                        <div class="mt-3">
+                            <div class="progress-bg"><div class="progress-fill" style="width: 40%; background-color: var(--accent-color);"></div></div>
+                            <p class="text-[10px] uppercase text-[var(--text-muted)] mt-2 font-bold tracking-widest">Across 3 Regions</p>
+                        </div>
+                    </div>
+
+                    <div class="dash-card p-6 flex flex-col justify-between border-l-4 border-l-red-500 min-w-0">
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] truncate">Admin Action</p>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">Urgent</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-[var(--text-main)] mt-1">Pending Signatures</h3>
+                        <p class="text-sm text-[var(--text-muted)] mt-1 line-clamp-1">12 Master CODs require admin authorization to release to clients.</p>
+                        <a href="#" class="text-red-500 font-bold text-sm mt-3 hover:underline flex items-center gap-1 tab-btn" data-target="section-reports">Authorize Docs <i class="fas fa-arrow-right text-xs"></i></a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 dash-card flex flex-col min-w-0 w-full">
+                        <div class="p-6 border-b border-[var(--border-color)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-[var(--text-main)]">Global Active Orders</h3>
+                                <p class="text-xs font-medium text-[var(--text-muted)] mt-1">Live overview of incoming client batches across all facilities.</p>
+                            </div>
+                            <button class="btn-sm btn-outline-table w-full sm:w-auto min-w-0 !px-4 tab-btn shrink-0" data-target="section-clients"><i class="fas fa-users mr-1"></i> View All Clients</button>
+                        </div>
+                        
+                        <div class="overflow-x-auto flex-grow w-full">
+                            <table class="clean-table min-w-[700px]">
+                                <thead>
+                                    <tr>
+                                        <th>Client Name</th>
+                                        <th>Batch ID</th>
+                                        <th>Facility Route</th>
+                                        <th>Status</th>
+                                        <th style="text-align: center; width: 170px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded bg-slate-100 text-slate-600 flex items-center justify-center text-[10px] font-bold">TS</div>
+                                                <span class="font-bold text-[var(--text-main)]">TechSys Inc.</span>
+                                            </div>
+                                        </td>
+                                        <td>BAT-9088</td>
+                                        <td><span class="text-[var(--text-muted)] text-sm"><i class="fas fa-warehouse text-[var(--text-muted)] opacity-50 mr-1"></i> North American Hub</span></td>
+                                        <td><span class="status-badge badge-warning">Processing</span></td>
+                                        <td class="text-center"><button class="btn-sm btn-outline-table">Audit</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] font-bold">MC</div>
+                                                <span class="font-bold text-[var(--text-main)]">MedCorp Health</span>
+                                            </div>
+                                        </td>
+                                        <td>BAT-9092</td>
+                                        <td><span class="text-[var(--text-muted)] text-sm"><i class="fas fa-warehouse text-[var(--text-muted)] opacity-50 mr-1"></i> European Hub</span></td>
+                                        <td><span class="status-badge badge-info">In Transit</span></td>
+                                        <td class="text-center"><button class="btn-sm btn-outline-table">Track Fleet</button></td>
+                                    </tr>
+                                    <tr style="background: rgba(249, 115, 22, 0.05);">
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded bg-orange-100 text-[var(--accent-dark)] flex items-center justify-center text-[10px] font-bold">FG</div>
+                                                <span class="font-bold text-[var(--text-main)]">FinTech Global</span>
+                                            </div>
+                                        </td>
+                                        <td>BAT-9102</td>
+                                        <td><span class="text-[var(--accent-dark)] font-bold text-sm"><i class="fas fa-warehouse mr-1"></i> APAC Hub (Chennai)</span></td>
+                                        <td><span class="status-badge badge-success">Awaiting Dispatch</span></td>
+                                        <td class="text-center"><button class="btn-sm btn-action">Assign Truck</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded bg-slate-100 text-slate-600 flex items-center justify-center text-[10px] font-bold">OA</div>
+                                                <span class="font-bold text-[var(--text-main)]">OmniAssets</span>
+                                            </div>
+                                        </td>
+                                        <td>BAT-9110</td>
+                                        <td><span class="text-[var(--text-muted)] text-sm">-- Pending Route --</span></td>
+                                        <td><span class="status-badge bg-slate-100 text-slate-600 border border-slate-200">Quote Sent</span></td>
+                                        <td class="text-center"><button class="btn-sm btn-disabled" disabled><i class="fas fa-lock mr-2"></i> Locked</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-8">
+                        <!-- System Activity Feed -->
+                        <div class="dash-card flex flex-col h-[450px]">
+                            <div class="p-4 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--dash-bg)] rounded-t-[15px]">
+                                <h3 class="font-bold text-[var(--text-main)] flex items-center gap-2 text-sm uppercase tracking-widest">
+                                    <i class="fas fa-satellite-dish text-[var(--accent-dark)]"></i> Live System Alerts
+                                </h3>
+                                <div class="flex gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mt-1"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-grow overflow-y-auto bg-[var(--bg-color)]">
+                                <!-- Feed Item 1 -->
+                                <div class="activity-item bg-red-50/50 dark:bg-red-900/10">
+                                    <div class="activity-icon bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400">
+                                        <i class="fas fa-exclamation-triangle text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-[var(--text-main)]">Compliance Warning</p>
+                                        <p class="text-xs text-[var(--text-muted)] mt-1">BAT-9088 (TechSys) detected 3 failed drives. Switched to physical shredding protocol.</p>
+                                        <span class="text-[10px] font-bold text-[var(--text-muted)] mt-2 block">10 mins ago • Processing Unit 4</span>
+                                    </div>
+                                </div>
+
+                                <!-- Feed Item 2 -->
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-orange-100 text-[var(--accent-dark)] dark:bg-orange-900/50 dark:text-orange-400">
+                                        <i class="fas fa-truck text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-[var(--text-main)]">Fleet Arrival</p>
+                                        <p class="text-xs text-[var(--text-muted)] mt-1">Truck #42 (Driver: J. Smith) arrived safely at the European Hub loading dock.</p>
+                                        <span class="text-[10px] font-bold text-[var(--text-muted)] mt-2 block">45 mins ago • Logistics</span>
+                                    </div>
+                                </div>
+
+                                <!-- Feed Item 3 -->
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400">
+                                        <i class="fas fa-check-double text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-[var(--text-main)]">Sanitization Complete</p>
+                                        <p class="text-xs text-[var(--text-muted)] mt-1">NIST 800-88 wipe completed for 450 units in BAT-9044. Auto-generating certificates.</p>
+                                        <span class="text-[10px] font-bold text-[var(--text-muted)] mt-2 block">1 hour ago • Auto-System</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Feed Item 4 -->
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                        <i class="fas fa-user-plus text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-[var(--text-main)]">New Client Registered</p>
+                                        <p class="text-xs text-[var(--text-muted)] mt-1">'Quantum Data Solutions' completed onboarding. Account #1029 assigned.</p>
+                                        <span class="text-[10px] font-bold text-[var(--text-muted)] mt-2 block">3 hours ago • Sales Portal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Status Card -->
+                        <div class="dash-card p-6 min-w-0">
+                            <h3 class="text-sm uppercase tracking-widest font-bold text-[var(--text-main)] mb-4 border-b border-[var(--border-color)] pb-3">Hub Capacity Alerts</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <img src="images/pexels-tomfisk-7221985.jpg" alt="NA Hub" class="w-10 h-10 rounded object-cover shrink-0">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-[var(--text-main)] truncate">North American Hub</p>
+                                            <div class="w-full bg-[var(--border-color)] h-1.5 rounded-full mt-1.5 overflow-hidden"><div class="bg-red-500 h-full w-[92%]"></div></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-black text-red-500 shrink-0">92%</span>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <img src="images/pexels-shvets-production-7512945.jpg" alt="EU Hub" class="w-10 h-10 rounded object-cover shrink-0">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-[var(--text-main)] truncate">European Hub</p>
+                                            <div class="w-full bg-[var(--border-color)] h-1.5 rounded-full mt-1.5 overflow-hidden"><div class="bg-[#10b981] h-full w-[45%]"></div></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-black text-[#10b981] shrink-0">45%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder Tabs for Admin Links -->
+            <div id="section-clients" class="tab-section">
+                <div class="dash-card p-6 flex flex-col justify-center items-center text-center py-16 w-full">
+                    <i class="fas fa-building text-6xl text-[var(--text-muted)] mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-[var(--text-main)]">Client Management Directory</h3>
+                    <p class="text-sm text-[var(--text-muted)] mt-2 max-w-md">Manage enterprise accounts, assign account managers, and view total client ROI.</p>
+                    <button class="btn-sm btn-action mt-6 w-auto !px-6"><i class="fas fa-plus mr-2"></i> Onboard New Client</button>
+                </div>
+            </div>
+
+            <div id="section-logistics" class="tab-section">
+                <div class="dash-card p-6 flex flex-col justify-center items-center text-center py-16 w-full">
+                    <i class="fas fa-map-marked-alt text-6xl text-[var(--text-muted)] mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-[var(--text-main)]">Fleet & Logistics Tracking</h3>
+                    <p class="text-sm text-[var(--text-muted)] mt-2 max-w-md">View live GPS mapping of all active secure transport vehicles and driver manifests.</p>
+                    <button class="btn-sm btn-outline-table mt-6 w-auto !px-6"><i class="fas fa-route mr-2"></i> Optimize Routes</button>
+                </div>
+            </div>
+
+            <div id="section-facilities" class="tab-section">
+                <div class="dash-card p-6 flex flex-col justify-center items-center text-center py-16 w-full">
+                    <i class="fas fa-microchip text-6xl text-[var(--text-muted)] mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-[var(--text-main)]">Processing Centers</h3>
+                    <p class="text-sm text-[var(--text-muted)] mt-2 max-w-md">Monitor intake queues, shredder maintenance schedules, and sorting line efficiency.</p>
+                    <button class="btn-sm btn-action mt-6 w-auto !px-6"><i class="fas fa-industry mr-2"></i> View Live Cameras</button>
+                </div>
+            </div>
+
+            <div id="section-reports" class="tab-section">
+                <div class="dash-card p-6 flex flex-col justify-center items-center text-center py-16 w-full">
+                    <i class="fas fa-chart-bar text-6xl text-[var(--text-muted)] mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-[var(--text-main)]">Global Compliance Reports</h3>
+                    <p class="text-sm text-[var(--text-muted)] mt-2 max-w-md">Generate ESG impact reports, audit downstream vendors, and sign pending CODs.</p>
+                    <button class="btn-sm btn-action mt-6 w-auto !px-6"><i class="fas fa-file-signature mr-2"></i> Review Pending Docs (12)</button>
+                </div>
+            </div>
+
+            <div id="section-settings" class="tab-section">
+                <div class="dash-card p-6 flex flex-col justify-center items-center text-center py-16 w-full">
+                    <i class="fas fa-cogs text-6xl text-[var(--text-muted)] mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-[var(--text-main)]">System Settings</h3>
+                    <p class="text-sm text-[var(--text-muted)] mt-2 max-w-md">Configure API integrations, manage staff access roles, and update global pricing algorithms.</p>
+                    <button class="btn-sm btn-outline-table mt-6 w-auto !px-6"><i class="fas fa-users-cog mr-2"></i> Manage Staff</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- TAB FILTER LOGIC ---
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabSections = document.querySelectorAll('.tab-section');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // 1. Remove active state from all buttons & hide all sections
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabSections.forEach(section => section.classList.remove('active'));
+                
+                // 2. Add active state to clicked button (and any mirroring buttons)
+                const targetId = btn.getAttribute('data-target');
+                document.querySelectorAll(`[data-target="${targetId}"]`).forEach(b => b.classList.add('active'));
+                
+                // 3. Show target section
+                document.getElementById(targetId).classList.add('active');
+                
+                // 4. Auto-close sidebar on mobile
+                if(window.innerWidth <= 1024 && typeof sidebar !== 'undefined') {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // --- SIDEBAR TOGGLE ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // --- THEME LOGIC ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = themeBtn.querySelector('i');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        function applyTheme(isDark) {
+            if(isDark) {
+                document.body.classList.add('dark-mode');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        applyTheme(savedTheme === 'dark');
+
+        themeBtn.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('dark-mode');
+            applyTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // --- RTL LOGIC ---
+        const rtlBtn = document.getElementById('rtl-toggle');
+        const savedDir = localStorage.getItem('dir') || 'ltr';
+        
+        if (savedDir === 'rtl') { document.documentElement.dir = 'rtl'; }
+
+        if(rtlBtn) {
+            rtlBtn.addEventListener('click', () => {
+                const isRTL = document.documentElement.dir === 'rtl';
+                document.documentElement.dir = isRTL ? 'ltr' : 'rtl';
+                localStorage.setItem('dir', isRTL ? 'ltr' : 'rtl');
+            });
+        }
+    </script>
+</body>
+</html>

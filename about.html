@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About EcoWay - E-Waste Recycling & ITAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === RESET & CORE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* === THEME VARIABLES (E-Waste Corporate: Clean White, Slate, Orange) === */
+        :root {
+            --bg-color: #F8FAFC;
+            --bg-secondary: #F1F5F9; 
+            --bg-card: #FFFFFF; 
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --accent-color: #F97316; /* Bright Corporate Orange */
+            --accent-dark: #EA580C; /* Darker Orange for hover */
+            --border-color: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.98);
+            --drawer-bg: #FFFFFF;
+            --drawer-text: #0F172A;
+            --menu-hover-bg: rgba(249, 115, 22, 0.05); 
+        }
+
+        /* DARK MODE */
+        body.dark-mode {
+            --bg-color: #0B1120; 
+            --bg-secondary: #1E293B; 
+            --bg-card: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8;
+            --accent-color: #F97316; 
+            --accent-dark: #FB923C; 
+            --border-color: #334155;
+            --nav-bg: rgba(11, 17, 32, 0.98);
+            --drawer-bg: #0F172A;
+            --drawer-text: #F8FAFC;
+            --menu-hover-bg: rgba(249, 115, 22, 0.1); 
+        }
+
+        /* RTL SUPPORT */
+        [dir="rtl"] { text-align: right; }
+        [dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+        [dir="rtl"] .mr-auto { margin-left: auto; margin-right: 0; }
+        [dir="rtl"] .pl-4 { padding-right: 1rem; padding-left: 0; }
+        [dir="rtl"] .fa-arrow-right { transform: rotate(180deg); }
+        [dir="rtl"] .fullscreen-menu { right: auto; left: 0; transform: translateX(-100%); border-left: none; border-right: 1px solid var(--border-color); }
+
+        /* === ANIMATIONS & UTILITIES === */
+        @keyframes subtleZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        .animate-zoom {
+            animation: subtleZoom 20s infinite alternate ease-in-out;
+        }
+
+        /* === NAVBAR (NEW DESIGN) === */
+        .navbar { 
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--accent-color); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 16px 0; transition: all 0.3s ease;
+        }
+        
+        /* Main Nav Links */
+        .nav-link { 
+            position: relative;
+            padding: 8px 4px; 
+            margin: 0 12px;
+            color: var(--text-main); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; transition: color 0.3s ease; 
+            display: inline-flex; align-items: center; gap: 6px; cursor: pointer; 
+        }
+        @media (min-width: 1440px) {
+            .nav-link { margin: 0 16px; font-size: 14px; }
+        }
+        
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0; 
+            width: 0%; height: 2px; background-color: var(--accent-color); 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link:hover { color: var(--accent-color); background: transparent; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: var(--accent-color); background: transparent; }
+        
+        /* Fixed Dropdown Layout */
+        .dropdown { position: relative; display: flex; align-items: center; height: 100%; }
+        .dropdown-menu { 
+            position: absolute; top: 100%; left: 0; transform: translateY(15px); 
+            margin-top: 10px; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 100; 
+        }
+        .dropdown-inner { 
+            background: var(--bg-card); border: 1px solid var(--border-color); 
+            border-top: 3px solid var(--accent-color); border-radius: 4px; 
+            min-width: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; 
+            display: flex; flex-direction: column; gap: 0;
+        }
+        .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        
+        /* Clean Dropdown Items */
+        .dropdown-item { 
+            display: block; padding: 12px 20px; 
+            color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; 
+            transition: all 0.2s; text-align: left; white-space: nowrap; border-left: 2px solid transparent;
+        }
+        .dropdown-item:hover { 
+            background: var(--bg-secondary); color: var(--accent-color); padding-left: 24px; border-left-color: var(--accent-color);
+        }
+        [dir="rtl"] .dropdown-item:hover { padding-left: 20px; padding-right: 24px; border-left-color: transparent; border-right: 2px solid var(--accent-color); }
+
+        /* PILL TOGGLE */
+        .theme-toggle-pill { width: 52px; height: 26px; background: var(--bg-secondary); border-radius: 30px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; border: 1px solid var(--border-color); }
+        .theme-toggle-pill i { font-size: 10px; z-index: 1; }
+        .theme-toggle-pill .fa-sun { color: #f59e0b; }
+        .theme-toggle-pill .fa-moon { color: #999; }
+        .theme-toggle-pill .thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
+        body.dark-mode .theme-toggle-pill .thumb { transform: translateX(26px); background: #333; }
+
+        /* BUTTONS */
+        .btn { padding: 10px 24px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
+        .btn-solid { background: var(--accent-color); color: #FFFFFF !important; border: 2px solid var(--accent-color); }
+        .btn-solid:hover { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2); }
+        .btn-outline { border: 2px solid var(--text-main); color: var(--text-main); background: transparent; }
+        .btn-outline:hover { background: var(--text-main); color: var(--bg-color); transform: translateY(-2px); }
+
+        /* MOBILE OVERLAY BACKGROUND */
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px);
+        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+
+        /* HAMBURGER MENU */
+        .fullscreen-menu { 
+            position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 380px;
+            background: var(--drawer-bg); border-left: 1px solid var(--border-color);
+            z-index: 1001; display: flex; flex-direction: column; color: var(--drawer-text); 
+            opacity: 0; visibility: hidden; transform: translateX(100%); 
+            transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); box-shadow: -15px 0 40px rgba(0,0,0,0.1);
+        }
+        .fullscreen-menu.active { opacity: 1; visibility: visible; transform: translateX(0); }
+        
+        .mobile-link { 
+            display: block; width: 100%; padding: 16px 0;
+            font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-main); text-decoration: none; transition: all 0.3s; 
+            border-bottom: 1px dashed var(--border-color); text-align: left;
+        }
+        .mobile-link:hover { color: var(--accent-color); padding-left: 8px; }
+        [dir="rtl"] .mobile-link { text-align: right; }
+        [dir="rtl"] .mobile-link:hover { padding-left: 0; padding-right: 8px; }
+
+        /* TIMELINE STYLES */
+        .timeline-container { position: relative; max-w-[1200px]; margin: 0 auto; padding: 40px 0; }
+        .timeline-container::after { content: ''; position: absolute; width: 2px; background-color: var(--accent-color); top: 0; bottom: 0; left: 50%; transform: translateX(-50%); }
+        .timeline-item { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+        .timeline-item.left { left: 0; text-align: right; }
+        .timeline-item.right { left: 50%; }
+        .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; right: -11px; background-color: var(--bg-card); border: 4px solid var(--accent-color); top: 24px; border-radius: 50%; z-index: 1; }
+        .timeline-item.right::after { left: -10px; }
+        @media screen and (max-width: 768px) {
+            .timeline-container::after { left: 31px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; text-align: left; }
+            .timeline-item.left { left: 0; text-align: left; }
+            .timeline-item.right { left: 0; }
+            .timeline-item.left::after, .timeline-item.right::after { left: 21px; }
+        }
+
+        /* FOOTER */
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding-top: 60px; }
+        footer h4 { color: var(--text-main); font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; } 
+        footer a, footer li, footer span { color: var(--text-muted); text-decoration: none; transition: all 0.3s; font-size: 0.95rem; }
+        footer a:hover { color: var(--accent-color); }
+        .social-link-circle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; transition: all 0.3s; color: var(--text-main); background: var(--bg-card); }
+        .social-link-circle:hover { background: var(--accent-color); color: #FFFFFF; border-color: var(--accent-color); transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid var(--border-color); padding: 24px 0; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR START -->
+    <nav class="navbar">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
+            <div class="flex items-center flex-1">
+                <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                    EcoWay
+                </a>
+            </div>
+            
+            <div class="hidden xl:flex justify-center items-center gap-2">
+                <div class="dropdown">
+                    <div class="nav-link">Home <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="index.html" class="dropdown-item">Home Page 1</a>
+                            <a href="home-2.html" class="dropdown-item">Home Page 2</a>
+                        </div>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link active">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="dropdown">
+                    <div class="nav-link">Dashboard <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="user.html" class="dropdown-item">User Dashboard</a>
+                            <a href="admin.html" class="dropdown-item">Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden xl:flex items-center justify-end flex-1 gap-3">
+                <a href="login.html" class="btn btn-outline !py-2 !px-5 !text-[11px]">Login</a> 
+                <a href="register.html" class="btn btn-solid !py-2 !px-5 !text-[11px]">Register</a>
+                
+                <div class="w-px h-5 bg-[var(--border-color)] mx-2"></div>
+                
+                <button id="rtl-btn" class="text-[9px] font-black text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-secondary)] transition-all uppercase tracking-widest border border-[var(--border-color)] px-2.5 py-1.5 rounded">RTL</button>
+                
+                <div id="theme-toggle-desktop" class="theme-toggle-pill" title="Toggle Dark Mode">
+                    <i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div>
+                </div>
+            </div>
+
+            <div class="xl:hidden flex items-center justify-end flex-1">
+                <button id="mobile-btn" class="w-10 h-10 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-main)] hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- NAVBAR END -->
+
+    <!-- HAMBURGER MENU START -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <div class="fullscreen-menu" id="fullscreen-menu">
+        <div class="w-full px-6 py-5 flex justify-between items-center border-b border-[var(--border-color)] shrink-0 bg-[var(--bg-secondary)]">
+            <a href="index.html" class="text-xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                EcoWay
+            </a>
+            <button id="close-menu" class="w-8 h-8 rounded border border-[var(--border-color)] flex items-center justify-center hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] transition-all text-lg bg-[var(--bg-card)] text-[var(--text-muted)]">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col items-start justify-start px-6 py-4 w-full overflow-y-auto flex-1">
+            <a href="index.html" class="mobile-link">Home Page 1</a>
+            <a href="home-2.html" class="mobile-link">Home Page 2</a>
+            <a href="about.html" class="mobile-link" style="color: var(--accent-color); border-top: 1px dashed var(--border-color);">About</a>
+            <a href="services.html" class="mobile-link">Services</a>
+            <a href="pricing.html" class="mobile-link">Pricing</a>
+            <a href="blog.html" class="mobile-link">Blog</a>
+            <a href="faq.html" class="mobile-link">FAQ</a>
+            <a href="contact.html" class="mobile-link">Contact</a>
+            
+            <div class="w-full h-4"></div>
+            <span class="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mb-2 block">Portals</span>
+            <a href="user.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">User Dashboard</a>
+            <a href="admin.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">Admin Dashboard</a>
+        </div>
+
+        <div class="w-full px-6 py-6 border-t border-[var(--border-color)] flex flex-col gap-5 shrink-0 bg-[var(--bg-secondary)]">
+            <div class="flex justify-between items-center w-full">
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Theme:</span>
+                    <div id="theme-toggle-mobile" class="theme-toggle-pill"><i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Layout:</span>
+                    <button id="rtl-toggle-mobile" class="text-[10px] font-black text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border-color)] px-3 py-1.5 rounded hover:border-[var(--accent-color)] transition-colors">LTR / RTL</button>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-3 w-full mt-2">
+                <a href="login.html" class="btn btn-outline w-full !py-3 rounded">Login</a>
+                <a href="register.html" class="btn btn-solid w-full !py-3 rounded">Register</a>
+            </div>
+        </div>
+    </div>
+    <!-- HAMBURGER MENU END -->
+
+    <!-- HERO BANNER START (ABOUT PAGE) -->
+    <section class="relative w-full min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden pt-28">
+        
+        <div class="absolute inset-0 z-0">
+            <img src="images/pexels-readymade-3850495.jpg" alt="EcoWay Team at Work" class="w-full h-full object-cover object-center animate-zoom" />
+            <div class="absolute inset-0 bg-slate-900/80"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-5xl mx-auto px-6 text-center mt-auto mb-auto">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm">
+                <i class="fas fa-info-circle"></i> About EcoWay
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 sm:mb-6 text-white tracking-tight">
+                Pioneering <br class="hidden sm:block">
+                <span style="color: var(--accent-color);">Sustainable Tech</span><br class="hidden sm:block">
+                Recovery.
+            </h1>
+            
+            <p class="text-slate-300 text-sm sm:text-base md:text-xl leading-relaxed max-w-2xl mx-auto font-normal mb-8 sm:mb-10">
+                We are on a mission to eliminate e-waste from landfills while providing enterprise-grade data security for global corporations.
+            </p>
+
+            <a href="#our-story" class="w-12 h-12 border border-white/30 rounded-full flex items-center justify-center text-white mx-auto hover:bg-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all mt-8 animate-bounce">
+                <i class="fas fa-arrow-down"></i>
+            </a>
+
+        </div>
+    </section>
+    <!-- HERO BANNER END -->
+
+    <!-- SECTION 1: OUR STORY (ABOUT RANDOM 1 - 70+ LINES) -->
+    <section id="our-story" class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Left: Large Image & Badge -->
+                <div class="relative w-full h-[500px] lg:h-[650px] rounded-lg overflow-hidden shadow-2xl">
+                    <img src="images/pexels-tomfisk-5099271.jpg" alt="Processing Plant" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    
+                    <div class="absolute bottom-8 left-8 right-8 bg-[var(--bg-card)] border border-[var(--border-color)] p-6 rounded shadow-xl">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-[var(--accent-color)] rounded text-white flex items-center justify-center text-2xl shrink-0">
+                                <i class="fas fa-hand-holding-water"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-[var(--text-main)]">Founded on Responsibility</h4>
+                                <p class="text-sm text-[var(--text-muted)] mt-1 line-clamp-2">Our journey began with a simple belief: technological advancement shouldn't cost the earth.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Text Content -->
+                <div class="flex flex-col justify-center">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] mb-6 rounded w-max">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-[var(--accent-color)]">Who We Are</span>
+                    </div>
+                    
+                    <h2 class="text-3xl md:text-5xl font-black leading-tight text-[var(--text-main)] tracking-tight mb-8">
+                        Redefining the lifecycle of <span class="text-[var(--accent-color)]">corporate assets.</span>
+                    </h2>
+                    
+                    <p class="text-[var(--text-muted)] text-base md:text-lg leading-relaxed mb-6">
+                        EcoWay was established to bridge the massive gap between rapid corporate technology upgrades and the severe environmental consequences of improper electronic waste disposal. We realized that enterprises needed a partner who could manage logistics, ensure absolute data destruction, and recycle responsibly—all under one roof.
+                    </p>
+                    
+                    <p class="text-[var(--text-muted)] text-base md:text-lg leading-relaxed mb-10">
+                        Today, we are a global leader in IT Asset Disposition (ITAD). We process millions of pounds of e-waste annually, recovering precious commodities like gold, silver, and palladium, ensuring they are placed back into the manufacturing supply chain rather than polluting local ecosystems.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t border-[var(--border-color)]">
+                        <div class="flex flex-col">
+                            <i class="fas fa-shield-alt text-2xl text-[var(--accent-color)] mb-3"></i>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">Absolute Security</h4>
+                            <p class="text-sm text-[var(--text-muted)]">Military-grade data destruction protocols ensuring zero data breaches.</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <i class="fas fa-leaf text-2xl text-[var(--accent-color)] mb-3"></i>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">Zero Landfill</h4>
+                            <p class="text-sm text-[var(--text-muted)]">A strict commitment to recycling and refurbishing 100% of received assets.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: VISION & MISSION (70+ LINES) -->
+    <section class="py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] relative overflow-hidden">
+        
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-color)] opacity-5 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-[var(--text-main)] opacity-5 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-4">Our Purpose & Direction</h2>
+                <p class="text-[var(--text-muted)] text-base md:text-lg">The foundational pillars that guide our expansion, operations, and commitment to the environment.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                
+                <!-- Mission Card -->
+                <div class="relative bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-10 lg:p-14 overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--menu-hover-bg)] rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-150"></div>
+                    
+                    <div class="w-16 h-16 bg-[var(--accent-color)] rounded-lg flex items-center justify-center text-white text-3xl mb-8 shadow-md">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    
+                    <h3 class="text-3xl font-black text-[var(--text-main)] mb-6">Our Mission</h3>
+                    
+                    <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-8">
+                        To provide global enterprises with the most secure, transparent, and environmentally responsible IT Asset Disposition services available. We aim to mitigate corporate risk through absolute data destruction while extracting maximum value and minimizing the environmental footprint of retired technology.
+                    </p>
+                    
+                    <ul class="space-y-4 border-t border-[var(--border-color)] pt-8">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-[var(--accent-color)] mt-1 text-lg"></i>
+                            <span class="text-sm font-semibold text-[var(--text-main)]">Guarantee 100% data sanitization for all clients.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-[var(--accent-color)] mt-1 text-lg"></i>
+                            <span class="text-sm font-semibold text-[var(--text-main)]">Divert hazardous materials entirely from public landfills.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-[var(--accent-color)] mt-1 text-lg"></i>
+                            <span class="text-sm font-semibold text-[var(--text-main)]">Provide transparent, real-time ESG reporting.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Vision Card -->
+                <div class="relative bg-[var(--text-main)] border border-[var(--border-color)] rounded-xl p-10 lg:p-14 overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div class="absolute inset-0 z-0 opacity-20 transition-opacity duration-500 group-hover:opacity-40">
+                        <img src="images/pexels-anete-lusina-5721895.jpg" alt="Vision Background" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-slate-900/50"></div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-[var(--accent-color)] rounded-lg flex items-center justify-center text-white text-3xl mb-8 shadow-md">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        
+                        <h3 class="text-3xl font-black text-white mb-6">Our Vision</h3>
+                        
+                        <p class="text-slate-300 text-lg leading-relaxed mb-8">
+                            To create a world where corporate technological progress does not equate to ecological degradation. We envision a fully circular economy where every obsolete server, laptop, and mobile device is viewed not as waste, but as the raw material for tomorrow’s innovations.
+                        </p>
+                        
+                        <ul class="space-y-4 border-t border-slate-700 pt-8">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-globe text-[var(--accent-color)] mt-1 text-lg"></i>
+                                <span class="text-sm font-semibold text-slate-200">Establish processing hubs on every major continent.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-chart-line text-[var(--accent-color)] mt-1 text-lg"></i>
+                                <span class="text-sm font-semibold text-slate-200">Drive global policy changes regarding e-waste exports.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-microchip text-[var(--accent-color)] mt-1 text-lg"></i>
+                                <span class="text-sm font-semibold text-slate-200">Innovate automated, AI-driven sorting and shredding.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: HISTORY & TIMELINE (LONG SECTION - 70+ LINES) -->
+    <section class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
+        <div class="max-w-[1200px] mx-auto px-6 lg:px-12">
+            
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] block mb-4">Milestones</span>
+                <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-6">The EcoWay Journey</h2>
+                <p class="text-[var(--text-muted)] text-base md:text-lg">From a local recycling initiative to a global enterprise data security powerhouse.</p>
+            </div>
+
+            <!-- Vertical Timeline Wrapper -->
+            <div class="timeline-container">
+                
+                <!-- 2012 -->
+                <div class="timeline-item left group">
+                    <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded text-[var(--accent-color)] font-black text-xl mb-4">
+                            2012
+                        </div>
+                        <h4 class="text-xl font-bold text-[var(--text-main)] mb-3">Foundation & First Facility</h4>
+                        <div class="w-full h-40 mb-4 rounded overflow-hidden border border-[var(--border-color)]">
+                            <img src="images/pexels-tima-miroshnichenko-6755079.jpg" alt="Early facility" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                            EcoWay was founded in California with a 10,000 sq ft facility focused on consumer electronics recycling. The primary goal was to prevent toxic heavy metals from entering local municipal landfills.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2015 -->
+                <div class="timeline-item right group">
+                    <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[var(--accent-color)] font-black text-xl mb-4">
+                            2015
+                        </div>
+                        <h4 class="text-xl font-bold text-[var(--text-main)] mb-3">Shift to Enterprise ITAD</h4>
+                        <div class="w-full h-40 mb-4 rounded overflow-hidden border border-[var(--border-color)]">
+                            <img src="images/pexels-tomfisk-4445850.jpg" alt="Enterprise servers" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                            Recognizing the massive gap in corporate data security, EcoWay pivoted to B2B IT Asset Disposition. We acquired our first industrial shredder and attained initial DoD data destruction compliance.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2019 -->
+                <div class="timeline-item left group">
+                    <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded text-[var(--accent-color)] font-black text-xl mb-4">
+                            2019
+                        </div>
+                        <h4 class="text-xl font-bold text-[var(--text-main)] mb-3">R2v3 Certification Achieved</h4>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4">
+                            After rigorous auditing, EcoWay became one of the premier facilities to achieve the stringent R2v3 certification, solidifying our commitment to environmental health and worker safety.
+                        </p>
+                        <ul class="text-xs text-[var(--text-main)] font-bold space-y-2 border-t border-[var(--border-color)] pt-4">
+                            <li><i class="fas fa-check text-[var(--accent-color)] mr-2"></i> Zero export of untreated hazardous waste</li>
+                            <li><i class="fas fa-check text-[var(--accent-color)] mr-2"></i> Full downstream vendor auditing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2022 -->
+                <div class="timeline-item right group">
+                    <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[var(--accent-color)] font-black text-xl mb-4">
+                            2022
+                        </div>
+                        <h4 class="text-xl font-bold text-[var(--text-main)] mb-3">Launch of the Client Portal</h4>
+                        <div class="w-full h-40 mb-4 rounded overflow-hidden border border-[var(--border-color)]">
+                            <img src="images/pexels-tomfisk-4454065.jpg" alt="Logistics expansion" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                            We introduced our proprietary, unified dashboard. Corporate clients gained the unprecedented ability to schedule pickups, track assets via GPS, and download automated Compliance Reports instantly.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2026 -->
+                <div class="timeline-item left group">
+                    <div class="bg-[var(--accent-color)] border border-[var(--accent-dark)] rounded-lg p-6 shadow-2xl transition-all duration-300 transform group-hover:-translate-y-1 relative z-10 text-white">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/20 border border-white/30 rounded text-white font-black text-xl mb-4">
+                            2026
+                        </div>
+                        <h4 class="text-xl font-bold mb-3">Global Expansion</h4>
+                        <div class="w-full h-40 mb-4 rounded overflow-hidden border border-white/20">
+                            <img src="images/pexels-shvets-production-7512945.jpg" alt="Global operations" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-white/90 text-sm leading-relaxed">
+                            Opening three new mega-facilities across Europe and Asia, bringing our secure enterprise ITAD and zero-landfill processing capabilities to Fortune 500 clients worldwide.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: GLOBAL INFRASTRUCTURE & CERTIFICATIONS (ABOUT RANDOM 2 - 70+ LINES) -->
+    <section class="py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] relative overflow-hidden">
+        
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mb-16">
+                <!-- Left: Text & Badges -->
+                <div class="lg:col-span-5 flex flex-col">
+                    <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-6">
+                        Secured by the <br> Highest Standards.
+                    </h2>
+                    <p class="text-[var(--text-muted)] text-base leading-relaxed mb-8">
+                        We don't just promise security; we prove it. Our entire operational infrastructure is built around maintaining strict compliance with global environmental and data privacy laws. From HIPAA to GDPR, your assets are handled under an impenetrable umbrella of regulation.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <div class="px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded shadow-sm flex items-center gap-3">
+                            <i class="fas fa-shield-alt text-[var(--accent-color)] text-xl"></i>
+                            <span class="font-bold text-[var(--text-main)] text-sm">ISO 27001</span>
+                        </div>
+                        <div class="px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded shadow-sm flex items-center gap-3">
+                            <i class="fas fa-leaf text-[var(--accent-color)] text-xl"></i>
+                            <span class="font-bold text-[var(--text-main)] text-sm">ISO 14001</span>
+                        </div>
+                        <div class="px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded shadow-sm flex items-center gap-3">
+                            <i class="fas fa-briefcase-medical text-[var(--accent-color)] text-xl"></i>
+                            <span class="font-bold text-[var(--text-main)] text-sm">HIPAA Compliant</span>
+                        </div>
+                        <div class="px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded shadow-sm flex items-center gap-3">
+                            <i class="fas fa-globe-europe text-[var(--accent-color)] text-xl"></i>
+                            <span class="font-bold text-[var(--text-main)] text-sm">GDPR Aligned</span>
+                        </div>
+                    </div>
+                    
+                    <a href="data-security.html" class="btn btn-solid w-max">Review Compliance Policies</a>
+                </div>
+
+                <!-- Right: Large Feature Image -->
+                <div class="lg:col-span-7 relative h-[400px] md:h-[500px] w-full rounded-xl overflow-hidden shadow-xl border border-[var(--border-color)]">
+                    <img src="images/pexels-willians-huerta-2157111846-36397819.jpg" alt="Secure facility" class="w-full h-full object-cover object-center">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-slate-900/60 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6">
+                        <p class="text-white font-bold text-lg mb-1"><i class="fas fa-map-marker-alt text-[var(--accent-color)] mr-2"></i> Primary Processing Hub</p>
+                        <p class="text-slate-300 text-sm">A 50,000 sq. ft. facility equipped with advanced shredding matrixes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats/Feature Grid Bottom -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-12 border-t border-[var(--border-color)]">
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 rounded bg-[var(--bg-card)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent-color)] text-xl shrink-0 shadow-sm">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[var(--text-main)] mb-1">Armored Logistics</h4>
+                        <p class="text-xs text-[var(--text-muted)] leading-relaxed">Dedicated trucks with tamper-evident seals and constant GPS/video tracking.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 rounded bg-[var(--bg-card)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent-color)] text-xl shrink-0 shadow-sm">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[var(--text-main)] mb-1">Video Auditing</h4>
+                        <p class="text-xs text-[var(--text-muted)] leading-relaxed">Optional recorded destruction process available directly within the client portal.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 rounded bg-[var(--bg-card)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent-color)] text-xl shrink-0 shadow-sm">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[var(--text-main)] mb-1">Liability Transfer</h4>
+                        <p class="text-xs text-[var(--text-muted)] leading-relaxed">Full indemnification provided upon transfer of custody at your loading dock.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER START -->
+    <footer>
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 pt-4">
+                <div class="lg:col-span-4">
+                    <a href="index.html" class="text-2xl font-bold tracking-tight mb-6 flex items-center gap-2" style="color: var(--text-main); text-decoration: none;">
+                        <i class="fas fa-recycle" style="color: var(--accent-color);"></i>
+                        EcoWay ITAD
+                    </a>
+                    <p class="opacity-80 leading-relaxed text-sm mb-6 max-w-sm" style="color: var(--text-muted);">
+                        Providing secure IT asset disposition (ITAD) and certified e-waste recycling services for businesses. Protecting your data while protecting our planet.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="social-link-circle"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link-circle"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        <div>
+                            <h4>Client Portal</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Dashboard Login</a></li>
+                                <li><a href="#">Schedule Pickup</a></li>
+                                <li><a href="#">Track Assets</a></li>
+                                <li><a href="#">Compliance Reports</a></li>
+                                <li><a href="#">Certificates of Destruction</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Our Services</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Secure Data Destruction</a></li>
+                                <li><a href="#">IT Asset Recovery</a></li>
+                                <li><a href="#">Electronics Recycling</a></li>
+                                <li><a href="#">Battery Disposal</a></li>
+                                <li><a href="#">Corporate Sustainability</a></li>
+                            </ul>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <h4>Corporate Headquarters</h4>
+                            <ul class="space-y-3 text-[var(--text-muted)] text-sm">
+                                <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 shrink-0" style="color: var(--accent-color);"></i><span>100 Innovation Drive<br>Tech Park, CA 94043</span></li>
+                                <li class="flex items-center"><i class="fas fa-phone mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="tel:+18005550199" class="break-all">1-800-555-0199</a></li>
+                                <li class="flex items-center"><i class="fas fa-envelope mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="mailto:support@ecowaste.com" class="break-all">support@ecowaste.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+                <p style="color: var(--text-muted);">&copy; 2026 EcoWay ITAD Services. All rights reserved.</p>
+                <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+                    <a href="#">Security Policy</a>
+                    <a href="#">Environmental Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER END -->
+
+    <script>
+        // Drawer Menu Logic
+        const mobileBtn = document.getElementById('mobile-btn'); 
+        const fullscreenMenu = document.getElementById('fullscreen-menu'); 
+        const closeMenu = document.getElementById('close-menu'); 
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        
+        function toggleMenu() { 
+            fullscreenMenu.classList.toggle('active'); 
+            drawerOverlay.classList.toggle('active');
+            document.body.style.overflow = fullscreenMenu.classList.contains('active') ? 'hidden' : 'auto';
+        }
+        
+        mobileBtn.onclick = toggleMenu; 
+        closeMenu.onclick = toggleMenu; 
+        drawerOverlay.onclick = toggleMenu; 
+        
+        // Theme Logic
+        const themeDesktop = document.getElementById('theme-toggle-desktop');
+        const themeMobile = document.getElementById('theme-toggle-mobile'); 
+        const theme = localStorage.getItem('theme') || 'light';
+
+        function updateThemeUI(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode'); 
+                if(themeMobile) themeMobile.classList.add('active');
+            } else {
+                document.body.classList.remove('dark-mode');
+                if(themeMobile) themeMobile.classList.remove('active');
+            }
+        }
+        
+        updateThemeUI(theme === 'dark');
+        
+        function toggleTheme() { 
+            const isDark = !document.body.classList.contains('dark-mode');
+            updateThemeUI(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+        }
+        
+        themeDesktop.onclick = toggleTheme; 
+        if(themeMobile) themeMobile.onclick = toggleTheme;
+        
+        // RTL Logic
+        const rtlBtn = document.getElementById('rtl-btn'); 
+        const rtlMobile = document.getElementById('rtl-toggle-mobile'); 
+        const dir = localStorage.getItem('dir') || 'ltr';
+        
+        if (dir === 'rtl') { 
+            document.documentElement.dir = 'rtl'; 
+        }
+        
+        function toggleRTL() { 
+            const isRTL = document.documentElement.dir === 'rtl'; 
+            document.documentElement.dir = isRTL ? 'ltr' : 'rtl'; 
+            localStorage.setItem('dir', isRTL ? 'ltr' : 'rtl'); 
+        }
+        
+        rtlBtn.onclick = toggleRTL; 
+        if(rtlMobile) rtlMobile.onclick = toggleRTL;
+    </script>
+</body>
+</html>

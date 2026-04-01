@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWay - E-Waste Recycling & ITAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === RESET & CORE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* === THEME VARIABLES (E-Waste Corporate: Clean White, Slate, Orange) === */
+        :root {
+            --bg-color: #F8FAFC;
+            --bg-secondary: #F1F5F9; 
+            --bg-card: #FFFFFF; 
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --accent-color: #F97316; /* Bright Corporate Orange */
+            --accent-dark: #EA580C; /* Darker Orange for hover */
+            --border-color: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.98);
+            --drawer-bg: #FFFFFF;
+            --drawer-text: #0F172A;
+            --menu-hover-bg: rgba(249, 115, 22, 0.05); 
+        }
+
+        /* DARK MODE */
+        body.dark-mode {
+            --bg-color: #0B1120; 
+            --bg-secondary: #1E293B; 
+            --bg-card: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8;
+            --accent-color: #F97316; 
+            --accent-dark: #FB923C; 
+            --border-color: #334155;
+            --nav-bg: rgba(11, 17, 32, 0.98);
+            --drawer-bg: #0F172A;
+            --drawer-text: #F8FAFC;
+            --menu-hover-bg: rgba(249, 115, 22, 0.1); 
+        }
+
+        /* RTL SUPPORT */
+        [dir="rtl"] { text-align: right; }
+        [dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+        [dir="rtl"] .mr-auto { margin-left: auto; margin-right: 0; }
+        [dir="rtl"] .pl-4 { padding-right: 1rem; padding-left: 0; }
+        [dir="rtl"] .fa-arrow-right { transform: rotate(180deg); }
+        [dir="rtl"] .fullscreen-menu { right: auto; left: 0; transform: translateX(-100%); border-left: none; border-right: 1px solid var(--border-color); }
+
+        /* === ANIMATIONS & UTILITIES === */
+        @keyframes subtleZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        .animate-zoom {
+            animation: subtleZoom 20s infinite alternate ease-in-out;
+        }
+
+        /* === NAVBAR (NEW DESIGN) === */
+        .navbar { 
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--accent-color); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 16px 0; transition: all 0.3s ease;
+        }
+        
+        /* Main Nav Links (Clean underline instead of pills) */
+        .nav-link { 
+            position: relative;
+            padding: 8px 4px; 
+            margin: 0 12px;
+            color: var(--text-main); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; transition: color 0.3s ease; 
+            display: inline-flex; align-items: center; gap: 6px; cursor: pointer; 
+        }
+        @media (min-width: 1440px) {
+            .nav-link { margin: 0 16px; font-size: 14px; }
+        }
+        
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0; 
+            width: 0%; height: 2px; background-color: var(--accent-color); 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link:hover { color: var(--accent-color); background: transparent; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: var(--accent-color); background: transparent; }
+        
+        /* Fixed Dropdown Layout (Sharp & Corporate) */
+        .dropdown { position: relative; display: flex; align-items: center; height: 100%; }
+        .dropdown-menu { 
+            position: absolute; top: 100%; left: 0; transform: translateY(15px); 
+            margin-top: 10px; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 100; 
+        }
+        .dropdown-inner { 
+            background: var(--bg-card); border: 1px solid var(--border-color); 
+            border-top: 3px solid var(--accent-color); border-radius: 4px; 
+            min-width: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; 
+            display: flex; flex-direction: column; gap: 0;
+        }
+        .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        
+        /* Clean Dropdown Items */
+        .dropdown-item { 
+            display: block; padding: 12px 20px; 
+            color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; 
+            transition: all 0.2s; text-align: left; white-space: nowrap; border-left: 2px solid transparent;
+        }
+        .dropdown-item:hover { 
+            background: var(--bg-secondary); color: var(--accent-color); padding-left: 24px; border-left-color: var(--accent-color);
+        }
+        [dir="rtl"] .dropdown-item:hover { padding-left: 20px; padding-right: 24px; border-left-color: transparent; border-right: 2px solid var(--accent-color); }
+
+        /* PILL TOGGLE */
+        .theme-toggle-pill { width: 52px; height: 26px; background: var(--bg-secondary); border-radius: 30px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; border: 1px solid var(--border-color); }
+        .theme-toggle-pill i { font-size: 10px; z-index: 1; }
+        .theme-toggle-pill .fa-sun { color: #f59e0b; }
+        .theme-toggle-pill .fa-moon { color: #999; }
+        .theme-toggle-pill .thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
+        body.dark-mode .theme-toggle-pill .thumb { transform: translateX(26px); background: #333; }
+
+        /* BUTTONS */
+        .btn { padding: 10px 24px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
+        .btn-solid { background: var(--accent-color); color: #FFFFFF !important; border: 2px solid var(--accent-color); }
+        .btn-solid:hover { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2); }
+        .btn-outline { border: 2px solid var(--text-main); color: var(--text-main); background: transparent; }
+        .btn-outline:hover { background: var(--text-main); color: var(--bg-color); transform: translateY(-2px); }
+
+        /* MOBILE OVERLAY BACKGROUND */
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px);
+        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+
+        /* HAMBURGER MENU */
+        .fullscreen-menu { 
+            position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 380px;
+            background: var(--drawer-bg); border-left: 1px solid var(--border-color);
+            z-index: 1001; display: flex; flex-direction: column; color: var(--drawer-text); 
+            opacity: 0; visibility: hidden; transform: translateX(100%); 
+            transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); box-shadow: -15px 0 40px rgba(0,0,0,0.1);
+        }
+        .fullscreen-menu.active { opacity: 1; visibility: visible; transform: translateX(0); }
+        
+        .mobile-link { 
+            display: block; width: 100%; padding: 16px 0;
+            font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-main); text-decoration: none; transition: all 0.3s; 
+            border-bottom: 1px dashed var(--border-color); text-align: left;
+        }
+        .mobile-link:hover { color: var(--accent-color); padding-left: 8px; }
+        [dir="rtl"] .mobile-link { text-align: right; }
+        [dir="rtl"] .mobile-link:hover { padding-left: 0; padding-right: 8px; }
+
+        /* FOOTER */
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding-top: 60px; }
+        footer h4 { color: var(--text-main); font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; } 
+        footer a, footer li, footer span { color: var(--text-muted); text-decoration: none; transition: all 0.3s; font-size: 0.95rem; }
+        footer a:hover { color: var(--accent-color); }
+        .social-link-circle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; transition: all 0.3s; color: var(--text-main); background: var(--bg-card); }
+        .social-link-circle:hover { background: var(--accent-color); color: #FFFFFF; border-color: var(--accent-color); transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid var(--border-color); padding: 24px 0; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR START -->
+    <nav class="navbar">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
+            
+            <!-- Left Side: Logo -->
+            <div class="flex items-center flex-1">
+                <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                    EcoWay
+                </a>
+            </div>
+            
+            <!-- Center: Navigation Links -->
+            <div class="hidden xl:flex justify-center items-center gap-2">
+                <div class="dropdown">
+                    <div class="nav-link active">Home <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="index.html" class="dropdown-item">Home Page 1</a>
+                            <a href="home-2.html" class="dropdown-item">Home Page 2</a>
+                        </div>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="dropdown">
+                    <div class="nav-link">Dashboard <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="user.html" class="dropdown-item">User Dashboard</a>
+                            <a href="admin.html" class="dropdown-item">Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Buttons & Toggles -->
+            <div class="hidden xl:flex items-center justify-end flex-1 gap-3">
+                <a href="login.html" class="btn btn-outline !py-2 !px-5 !text-[11px]">Login</a> 
+                <a href="register.html" class="btn btn-solid !py-2 !px-5 !text-[11px]">Register</a>
+                
+                <div class="w-px h-5 bg-[var(--border-color)] mx-2"></div>
+                
+                <button id="rtl-btn" class="text-[9px] font-black text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-secondary)] transition-all uppercase tracking-widest border border-[var(--border-color)] px-2.5 py-1.5 rounded">RTL</button>
+                
+                <div id="theme-toggle-desktop" class="theme-toggle-pill" title="Toggle Dark Mode">
+                    <i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div>
+                </div>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="xl:hidden flex items-center justify-end flex-1">
+                <button id="mobile-btn" class="w-10 h-10 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-main)] hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+    <!-- NAVBAR END -->
+
+    <!-- HAMBURGER MENU START -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <div class="fullscreen-menu" id="fullscreen-menu">
+        <div class="w-full px-6 py-5 flex justify-between items-center border-b border-[var(--border-color)] shrink-0 bg-[var(--bg-secondary)]">
+            <a href="index.html" class="text-xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                EcoWay
+            </a>
+            <button id="close-menu" class="w-8 h-8 rounded border border-[var(--border-color)] flex items-center justify-center hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] transition-all text-lg bg-[var(--bg-card)] text-[var(--text-muted)]">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col items-start justify-start px-6 py-4 w-full overflow-y-auto flex-1">
+            <a href="index.html" class="mobile-link" style="color: var(--accent-color); border-top: 1px dashed var(--border-color);">Home Page 1</a>
+            <a href="home-2.html" class="mobile-link">Home Page 2</a>
+            <a href="about.html" class="mobile-link">About</a>
+            <a href="services.html" class="mobile-link">Services</a>
+            <a href="pricing.html" class="mobile-link">Pricing</a>
+            <a href="blog.html" class="mobile-link">Blog</a>
+            <a href="faq.html" class="mobile-link">FAQ</a>
+            <a href="contact.html" class="mobile-link">Contact</a>
+            
+            <div class="w-full h-4"></div>
+            <span class="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mb-2 block">Portals</span>
+            <a href="user.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">User Dashboard</a>
+            <a href="admin.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">Admin Dashboard</a>
+        </div>
+
+        <div class="w-full px-6 py-6 border-t border-[var(--border-color)] flex flex-col gap-5 shrink-0 bg-[var(--bg-secondary)]">
+            <div class="flex justify-between items-center w-full">
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Theme:</span>
+                    <div id="theme-toggle-mobile" class="theme-toggle-pill"><i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Layout:</span>
+                    <button id="rtl-toggle-mobile" class="text-[10px] font-black text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border-color)] px-3 py-1.5 rounded hover:border-[var(--accent-color)] transition-colors">LTR / RTL</button>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-3 w-full mt-2">
+                <a href="login.html" class="btn btn-outline w-full !py-3 rounded">Login</a>
+                <a href="register.html" class="btn btn-solid w-full !py-3 rounded">Register</a>
+            </div>
+        </div>
+    </div>
+    <!-- HAMBURGER MENU END -->
+
+    <!-- HERO BANNER START (FULL SECTION DESIGN FIXED FOR OVERFLOW) -->
+    <section class="relative w-full min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-12">
+        
+        <!-- Full Background Image & Overlays -->
+        <div class="absolute inset-0 z-0">
+            <img src="images/pexels-shvets-production-7512889.jpg" alt="E-Waste ITAD Facility" class="w-full h-full object-cover object-center animate-zoom" />
+            <div class="absolute inset-0 bg-slate-900/80"></div>
+        </div>
+
+        <!-- Centered Content -->
+        <div class="relative z-10 w-full max-w-5xl mx-auto px-6 text-center mt-auto mb-auto">
+            
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm">
+                <i class="fas fa-shield-alt"></i> ISO 27001 Certified ITAD
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 sm:mb-6 text-white tracking-tight">
+                Modernizing <br class="hidden sm:block">
+                <span style="color: var(--accent-color);">IT Asset Disposition</span><br class="hidden sm:block">
+                For The Enterprise.
+            </h1>
+            
+            <p class="text-slate-300 text-sm sm:text-base md:text-xl leading-relaxed max-w-2xl mx-auto font-normal mb-8 sm:mb-10">
+                Secure data destruction, transparent compliance reporting, and sustainable electronics recycling—all managed through our unified corporate client portal.
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-sm mx-auto sm:max-w-none">
+                <a href="schedule.html" class="btn btn-solid w-full sm:w-auto group !py-3 sm:!py-4 !px-8 text-sm flex justify-center items-center gap-3">
+                    <span>Schedule Pickup</span>
+                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                </a>
+                <a href="dashboard.html" class="btn border-2 border-slate-500 text-white hover:bg-slate-800 hover:border-slate-400 w-full sm:w-auto !py-3 sm:!py-4 !px-8 text-sm transition-all flex justify-center items-center gap-2 backdrop-blur-sm">
+                    <i class="fas fa-chart-line"></i> Client Portal
+                </a>
+            </div>
+
+        </div>
+    </section>
+    <!-- HERO BANNER END -->
+
+    <!-- SECTION 1: COMPREHENSIVE ITAD SERVICES (CENTER ALIGNED) -->
+    <section class="py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-color)]">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            
+            <div class="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 gap-4">
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] block">Core Solutions</span>
+                <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight">
+                    Comprehensive E-Waste & <br />
+                    <span class="text-[var(--text-muted)]">Data Security Services.</span>
+                </h2>
+                <a href="services.html" class="btn btn-outline group mt-4">
+                    View All Services <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded overflow-hidden group hover:shadow-xl transition-all duration-300 text-center">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="images/pexels-tomfisk-4445844.jpg" alt="IT Asset Disposition" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="absolute top-4 left-4 bg-[var(--accent-color)] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded">Enterprise</div>
+                    </div>
+                    <div class="p-8 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-[var(--bg-secondary)] text-[var(--accent-color)] rounded flex items-center justify-center text-xl mb-6">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-[var(--text-main)] mb-3">IT Asset Disposition (ITAD)</h3>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
+                            Secure chain-of-custody logistics, inventory auditing, and value recovery for decommissioned corporate hardware.
+                        </p>
+                        <a href="services.html#itad" class="text-[var(--accent-color)] font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:text-[var(--accent-dark)] transition-colors">
+                            Learn More <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded overflow-hidden group hover:shadow-xl transition-all duration-300 text-center">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="images/pexels-cottonbro-4874406.jpg" alt="Hard Drive Shredding" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded">High Security</div>
+                    </div>
+                    <div class="p-8 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-[var(--bg-secondary)] text-[var(--accent-color)] rounded flex items-center justify-center text-xl mb-6">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-[var(--text-main)] mb-3">On-Site Data Destruction</h3>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
+                            DoD-compliant hard drive shredding and cryptographic wiping with instantaneous certificates of destruction.
+                        </p>
+                        <a href="services.html#data" class="text-[var(--accent-color)] font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:text-[var(--accent-dark)] transition-colors">
+                            Learn More <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded overflow-hidden group hover:shadow-xl transition-all duration-300 text-center">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="images/pexels-shvets-production-7512945.jpg" alt="Corporate Recycling" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="absolute top-4 left-4 bg-green-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded">Eco-Friendly</div>
+                    </div>
+                    <div class="p-8 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-[var(--bg-secondary)] text-[var(--accent-color)] rounded flex items-center justify-center text-xl mb-6">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-[var(--text-main)] mb-3">Certified Recycling</h3>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
+                            Zero-landfill processing of obsolete electronics, monitors, and peripherals in compliance with strict global standards.
+                        </p>
+                        <a href="services.html#recycling" class="text-[var(--accent-color)] font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:text-[var(--accent-dark)] transition-colors">
+                            Learn More <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: THE PROCESS (70+ LINES) -->
+    <section class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)] overflow-hidden">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <div class="relative">
+                    <div class="absolute -inset-4 border-2 border-[var(--border-color)] border-dashed rounded z-0 hidden md:block"></div>
+                    <img src="images/pexels-tima-miroshnichenko-6755079.jpg" alt="Component Recovery" class="w-full h-auto object-cover relative z-10 shadow-2xl rounded">
+                    <div class="absolute -bottom-8 -right-8 bg-[var(--bg-card)] border border-[var(--border-color)] p-6 shadow-xl rounded z-20 hidden lg:block">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center text-xl">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-[var(--text-main)]">Fully Audited Process</p>
+                                <p class="text-xs text-[var(--text-muted)] uppercase tracking-widest mt-1">End-to-End Tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] block mb-4">How It Works</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-12">
+                        The Secure Disposal Pipeline.
+                    </h2>
+
+                    <div class="relative border-l-2 border-[var(--border-color)] ml-6 space-y-12">
+                        
+                        <!-- Step 1 -->
+                        <div class="relative pl-10">
+                            <div class="absolute -left-[21px] top-0 w-10 h-10 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full flex items-center justify-center text-[var(--accent-color)] text-sm shadow-sm">
+                                <i class="fas fa-truck-loading"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">1. Secure Logistics & Pickup</h4>
+                            <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                                Our GPS-tracked fleet collects assets directly from your facilities. A strict chain of custody is established the moment items leave your loading dock.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative pl-10">
+                            <div class="absolute -left-[21px] top-0 w-10 h-10 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full flex items-center justify-center text-[var(--accent-color)] text-sm shadow-sm">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">2. Data Destruction</h4>
+                            <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                                All data-bearing devices undergo DoD 5220.22-M compliant wiping or physical shredding, guaranteeing complete data sanitization.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative pl-10">
+                            <div class="absolute -left-[21px] top-0 w-10 h-10 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full flex items-center justify-center text-[var(--accent-color)] text-sm shadow-sm">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">3. Recovery & Recycling</h4>
+                            <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                                Viable hardware is refurbished for remarketing to maximize your ROI. End-of-life components are broken down to raw commodities.
+                            </p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="relative pl-10">
+                            <div class="absolute -left-[21px] top-0 w-10 h-10 bg-[var(--accent-color)] border-2 border-[var(--bg-color)] rounded-full flex items-center justify-center text-white text-sm shadow-md">
+                                <i class="fas fa-file-signature"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-[var(--text-main)] mb-2">4. Certification</h4>
+                            <p class="text-[var(--text-muted)] text-sm leading-relaxed">
+                                Instantly download your Certificate of Destruction and Sustainability Impact Reports directly through the EcoWay Client Portal.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: ENVIRONMENTAL IMPACT (CENTER ALIGNED) -->
+    <section class="py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] overflow-hidden">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col items-center text-center">
+            
+            <div class="max-w-3xl mb-16">
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] block mb-4">Our Commitment</span>
+                <h2 class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-6">
+                    Protecting Data. <br>
+                    <span class="text-[var(--text-muted)]">Preserving the Planet.</span>
+                </h2>
+                <p class="text-[var(--text-muted)] text-base leading-relaxed mb-10 mx-auto max-w-2xl">
+                    Improper disposal of IT equipment contributes to severe toxic runoff. EcoWay is committed to a strict zero-landfill policy, ensuring that lead, mercury, and cadmium never reach local ecosystems. We extract and repurpose rare earth metals, driving a true circular economy.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-2xl mx-auto">
+                    <div class="bg-[var(--bg-card)] border border-[var(--border-color)] p-6 rounded shadow-sm">
+                        <i class="fas fa-weight-hanging text-3xl text-[var(--accent-color)] mb-4 block"></i>
+                        <h4 class="text-3xl font-black text-[var(--text-main)] mb-1">12.5M+</h4>
+                        <p class="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold">Lbs Diverted from Landfill</p>
+                    </div>
+                    <div class="bg-[var(--bg-card)] border border-[var(--border-color)] p-6 rounded shadow-sm">
+                        <i class="fas fa-tree text-3xl text-[var(--accent-color)] mb-4 block"></i>
+                        <h4 class="text-3xl font-black text-[var(--text-main)] mb-1">85,000</h4>
+                        <p class="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold">Carbon Offset Equivalency</p>
+                    </div>
+                </div>
+                
+                <a href="sustainability.html" class="text-sm font-bold text-[var(--text-main)] hover:text-[var(--accent-color)] flex items-center justify-center gap-2 transition-colors w-max mx-auto pb-1 border-b border-[var(--text-main)] hover:border-[var(--accent-color)]">
+                    Read our Annual Sustainability Report
+                </a>
+            </div>
+
+            <div class="relative w-full max-w-4xl h-[400px] lg:h-[500px] flex items-center justify-center mx-auto">
+                <div class="absolute w-[60%] h-[75%] top-0 left-0 z-10 border-4 border-[var(--bg-secondary)] shadow-2xl rounded overflow-hidden">
+                    <img src="images/pexels-francesco-ungaro-9953442.jpg" alt="Nature impact" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute w-[60%] h-[75%] bottom-0 right-0 z-20 border-4 border-[var(--bg-secondary)] shadow-xl rounded overflow-hidden">
+                    <img src="images/pexels-markusspiske-4651148.jpg" alt="Sustainable environment" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[var(--accent-color)] rounded-full mix-blend-multiply opacity-20 blur-3xl z-0"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 4: GLOBAL FACILITY & LOGISTICS (50+ LINES) -->
+    <section class="py-24 bg-[var(--bg-color)] border-b border-[var(--border-color)]">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-[var(--text-main)] tracking-tight mb-4">Enterprise-Grade Infrastructure</h2>
+                <p class="text-[var(--text-muted)] text-base">Operating state-of-the-art processing facilities equipped to handle multi-site national corporate hardware refresh cycles.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div class="flex flex-col gap-3">
+                        <div class="w-10 h-10 bg-[var(--menu-hover-bg)] text-[var(--accent-color)] rounded flex items-center justify-center text-lg">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-[var(--text-main)]">Nationwide Fleet</h4>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">Dedicated secure transport vehicles equipped with real-time GPS tracking and dual-driver protocols for high-value data assets.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="w-10 h-10 bg-[var(--menu-hover-bg)] text-[var(--accent-color)] rounded flex items-center justify-center text-lg">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-[var(--text-main)]">R2v3 Certified</h4>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">Our facilities undergo rigorous third-party auditing to maintain the highest global standard for responsible electronics recycling.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="w-10 h-10 bg-[var(--menu-hover-bg)] text-[var(--accent-color)] rounded flex items-center justify-center text-lg">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-[var(--text-main)]">24/7 Surveillance</h4>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">Processing centers are monitored continuously via closed-circuit cameras, with strict biometric access controls in place.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="w-10 h-10 bg-[var(--menu-hover-bg)] text-[var(--accent-color)] rounded flex items-center justify-center text-lg">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-[var(--text-main)]">API Integration</h4>
+                        <p class="text-[var(--text-muted)] text-sm leading-relaxed">Seamlessly integrate our tracking systems into your existing ERP or asset management software via secure REST APIs.</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 h-[400px] lg:h-full min-h-[400px] w-full rounded overflow-hidden shadow-lg border border-[var(--border-color)] relative">
+                    <img src="images/pexels-tomfisk-5099276.jpg" alt="Processing Facility" class="w-full h-full object-cover absolute inset-0">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: CORPORATE CTA / QUOTE FORM (50+ LINES) -->
+    <section class="relative w-full py-24 overflow-hidden flex items-center justify-center">
+        <!-- Background -->
+        <div class="absolute inset-0 z-0">
+            <img src="images/pexels-mike-van-schoonderwalt-1884800-5505699.jpg" alt="Data Center Servers" class="w-full h-full object-cover object-center" />
+            <div class="absolute inset-0 bg-slate-900/90 mix-blend-multiply"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            <!-- Left Text -->
+            <div class="text-left">
+                <h2 class="text-3xl md:text-5xl font-black leading-tight text-white mb-6 tracking-tight">
+                    Ready to offload your <br> legacy hardware?
+                </h2>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
+                    Get a fast, accurate quote for your next corporate hardware refresh. Whether you have 50 laptops or an entire data center, our team is ready to deploy.
+                </p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3 text-slate-200 text-sm font-medium"><i class="fas fa-check text-[var(--accent-color)]"></i> Free preliminary valuation</li>
+                    <li class="flex items-center gap-3 text-slate-200 text-sm font-medium"><i class="fas fa-check text-[var(--accent-color)]"></i> Custom logistical planning</li>
+                    <li class="flex items-center gap-3 text-slate-200 text-sm font-medium"><i class="fas fa-check text-[var(--accent-color)]"></i> Dedicated Account Manager</li>
+                </ul>
+            </div>
+
+            <!-- Right Form -->
+            <div class="bg-[var(--bg-card)] border border-[var(--border-color)] p-8 rounded shadow-2xl w-full max-w-lg mx-auto lg:ml-auto">
+                <h3 class="text-2xl font-bold text-[var(--text-main)] mb-6">Request a Custom Quote</h3>
+                <form class="flex flex-col gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" placeholder="First Name" required class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] px-4 py-3 rounded text-sm focus:outline-none focus:border-[var(--accent-color)] transition-colors">
+                        <input type="text" placeholder="Last Name" required class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] px-4 py-3 rounded text-sm focus:outline-none focus:border-[var(--accent-color)] transition-colors">
+                    </div>
+                    <input type="text" placeholder="Company Name" required class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] px-4 py-3 rounded text-sm focus:outline-none focus:border-[var(--accent-color)] transition-colors">
+                    <input type="email" placeholder="Corporate Email" required class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] px-4 py-3 rounded text-sm focus:outline-none focus:border-[var(--accent-color)] transition-colors">
+                    <select class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] px-4 py-3 rounded text-sm focus:outline-none focus:border-[var(--accent-color)] transition-colors appearance-none">
+                        <option value="" disabled selected>Estimated Asset Volume</option>
+                        <option value="small">1 - 50 Items</option>
+                        <option value="medium">51 - 200 Items</option>
+                        <option value="large">201 - 1000+ Items</option>
+                        <option value="datacenter">Full Data Center Decommission</option>
+                    </select>
+                    <button type="submit" class="btn btn-solid w-full !py-4 mt-2 rounded">Submit Request</button>
+                    <p class="text-[10px] text-[var(--text-muted)] text-center mt-2 uppercase tracking-widest">Your data is secured by industry-leading encryption.</p>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER START -->
+    <footer>
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 pt-4">
+                <div class="lg:col-span-4">
+                    <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter mb-6 block" style="color: var(--text-main); text-decoration: none;">
+                        EcoWay
+                    </a>
+                    <p class="opacity-80 leading-relaxed text-sm mb-6 max-w-sm" style="color: var(--text-muted);">
+                        Providing secure IT asset disposition (ITAD) and certified e-waste recycling services for businesses. Protecting your data while protecting our planet.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="social-link-circle"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link-circle"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        <div>
+                            <h4>Client Portal</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Dashboard Login</a></li>
+                                <li><a href="#">Schedule Pickup</a></li>
+                                <li><a href="#">Track Assets</a></li>
+                                <li><a href="#">Compliance Reports</a></li>
+                                <li><a href="#">Certificates of Destruction</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Our Services</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Secure Data Destruction</a></li>
+                                <li><a href="#">IT Asset Recovery</a></li>
+                                <li><a href="#">Electronics Recycling</a></li>
+                                <li><a href="#">Battery Disposal</a></li>
+                                <li><a href="#">Corporate Sustainability</a></li>
+                            </ul>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <h4>Corporate Headquarters</h4>
+                            <ul class="space-y-3 text-[var(--text-muted)] text-sm">
+                                <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 shrink-0" style="color: var(--accent-color);"></i><span>100 Innovation Drive<br>Tech Park, CA 94043</span></li>
+                                <li class="flex items-center"><i class="fas fa-phone mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="tel:+18005550199" class="break-all">1-800-555-0199</a></li>
+                                <li class="flex items-center"><i class="fas fa-envelope mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="mailto:support@ecowaste.com" class="break-all">support@ecowaste.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+                <p style="color: var(--text-muted);">&copy; 2026 EcoWay ITAD Services. All rights reserved.</p>
+                <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+                    <a href="#">Security Policy</a>
+                    <a href="#">Environmental Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER END -->
+
+    <script>
+        // Drawer Menu Logic
+        const mobileBtn = document.getElementById('mobile-btn'); 
+        const fullscreenMenu = document.getElementById('fullscreen-menu'); 
+        const closeMenu = document.getElementById('close-menu'); 
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        
+        function toggleMenu() { 
+            fullscreenMenu.classList.toggle('active'); 
+            drawerOverlay.classList.toggle('active');
+            document.body.style.overflow = fullscreenMenu.classList.contains('active') ? 'hidden' : 'auto';
+        }
+        
+        mobileBtn.onclick = toggleMenu; 
+        closeMenu.onclick = toggleMenu; 
+        drawerOverlay.onclick = toggleMenu; 
+        
+        // Theme Logic
+        const themeDesktop = document.getElementById('theme-toggle-desktop');
+        const themeMobile = document.getElementById('theme-toggle-mobile'); 
+        const theme = localStorage.getItem('theme') || 'light';
+
+        function updateThemeUI(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode'); 
+                if(themeMobile) themeMobile.classList.add('active');
+            } else {
+                document.body.classList.remove('dark-mode');
+                if(themeMobile) themeMobile.classList.remove('active');
+            }
+        }
+        
+        updateThemeUI(theme === 'dark');
+        
+        function toggleTheme() { 
+            const isDark = !document.body.classList.contains('dark-mode');
+            updateThemeUI(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+        }
+        
+        themeDesktop.onclick = toggleTheme; 
+        if(themeMobile) themeMobile.onclick = toggleTheme;
+        
+        // RTL Logic
+        const rtlBtn = document.getElementById('rtl-btn'); 
+        const rtlMobile = document.getElementById('rtl-toggle-mobile'); 
+        const dir = localStorage.getItem('dir') || 'ltr';
+        
+        if (dir === 'rtl') { 
+            document.documentElement.dir = 'rtl'; 
+        }
+        
+        function toggleRTL() { 
+            const isRTL = document.documentElement.dir === 'rtl'; 
+            document.documentElement.dir = isRTL ? 'ltr' : 'rtl'; 
+            localStorage.setItem('dir', isRTL ? 'ltr' : 'rtl'); 
+        }
+        
+        rtlBtn.onclick = toggleRTL; 
+        if(rtlMobile) rtlMobile.onclick = toggleRTL;
+    </script>
+</body>
+</html>

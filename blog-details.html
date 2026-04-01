@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details - EcoWay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === RESET & CORE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* === THEME VARIABLES === */
+        :root {
+            --bg-color: #F8FAFC;
+            --bg-secondary: #F1F5F9; 
+            --bg-card: #FFFFFF; 
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --accent-color: #F97316; 
+            --accent-dark: #EA580C; 
+            --border-color: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.98);
+            --drawer-bg: #FFFFFF;
+            --drawer-text: #0F172A;
+            --menu-hover-bg: rgba(249, 115, 22, 0.05); 
+        }
+
+        /* DARK MODE */
+        body.dark-mode {
+            --bg-color: #0B1120; 
+            --bg-secondary: #1E293B; 
+            --bg-card: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8;
+            --accent-color: #F97316; 
+            --accent-dark: #FB923C; 
+            --border-color: #334155;
+            --nav-bg: rgba(11, 17, 32, 0.98);
+            --drawer-bg: #0F172A;
+            --drawer-text: #F8FAFC;
+            --menu-hover-bg: rgba(249, 115, 22, 0.1); 
+        }
+
+        /* RTL SUPPORT */
+        [dir="rtl"] { text-align: right; }
+        [dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+        [dir="rtl"] .mr-auto { margin-left: auto; margin-right: 0; }
+        [dir="rtl"] .pl-4 { padding-right: 1rem; padding-left: 0; }
+        [dir="rtl"] .fa-arrow-right { transform: rotate(180deg); }
+        [dir="rtl"] .fullscreen-menu { right: auto; left: 0; transform: translateX(-100%); border-left: none; border-right: 1px solid var(--border-color); }
+
+        /* === ANIMATIONS & UTILITIES === */
+        @keyframes subtleZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        .animate-zoom {
+            animation: subtleZoom 20s infinite alternate ease-in-out;
+        }
+
+        /* === NAVBAR === */
+        .navbar { 
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--accent-color); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 16px 0; transition: all 0.3s ease;
+        }
+        
+        .nav-link { 
+            position: relative;
+            padding: 8px 4px; 
+            margin: 0 12px;
+            color: var(--text-main); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; transition: color 0.3s ease; 
+            display: inline-flex; align-items: center; gap: 6px; cursor: pointer; 
+        }
+        @media (min-width: 1440px) {
+            .nav-link { margin: 0 16px; font-size: 14px; }
+        }
+        
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0; 
+            width: 0%; height: 2px; background-color: var(--accent-color); 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link:hover { color: var(--accent-color); background: transparent; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: var(--accent-color); background: transparent; }
+        
+        .dropdown { position: relative; display: flex; align-items: center; height: 100%; }
+        .dropdown-menu { 
+            position: absolute; top: 100%; left: 0; transform: translateY(15px); 
+            margin-top: 10px; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 100; 
+        }
+        .dropdown-inner { 
+            background: var(--bg-card); border: 1px solid var(--border-color); 
+            border-top: 3px solid var(--accent-color); border-radius: 4px; 
+            min-width: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 8px 0; 
+            display: flex; flex-direction: column; gap: 0;
+        }
+        .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        
+        .dropdown-item { 
+            display: block; padding: 12px 20px; 
+            color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; 
+            transition: all 0.2s; text-align: left; white-space: nowrap; border-left: 2px solid transparent;
+        }
+        .dropdown-item:hover { 
+            background: var(--bg-secondary); color: var(--accent-color); padding-left: 24px; border-left-color: var(--accent-color);
+        }
+        [dir="rtl"] .dropdown-item:hover { padding-left: 20px; padding-right: 24px; border-left-color: transparent; border-right: 2px solid var(--accent-color); }
+
+        /* PILL TOGGLE */
+        .theme-toggle-pill { width: 52px; height: 26px; background: var(--bg-secondary); border-radius: 30px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; border: 1px solid var(--border-color); }
+        .theme-toggle-pill i { font-size: 10px; z-index: 1; }
+        .theme-toggle-pill .fa-sun { color: #f59e0b; }
+        .theme-toggle-pill .fa-moon { color: #999; }
+        .theme-toggle-pill .thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
+        body.dark-mode .theme-toggle-pill .thumb { transform: translateX(26px); background: #333; }
+
+        /* BUTTONS */
+        .btn { padding: 10px 24px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
+        .btn-solid { background: var(--accent-color); color: #FFFFFF !important; border: 2px solid var(--accent-color); }
+        .btn-solid:hover { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2); }
+        .btn-outline { border: 2px solid var(--text-main); color: var(--text-main); background: transparent; }
+        .btn-outline:hover { background: var(--text-main); color: var(--bg-color); transform: translateY(-2px); }
+
+        /* MOBILE OVERLAY BACKGROUND */
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px);
+        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+
+        /* HAMBURGER MENU */
+        .fullscreen-menu { 
+            position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 380px;
+            background: var(--drawer-bg); border-left: 1px solid var(--border-color);
+            z-index: 1001; display: flex; flex-direction: column; color: var(--drawer-text); 
+            opacity: 0; visibility: hidden; transform: translateX(100%); 
+            transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); box-shadow: -15px 0 40px rgba(0,0,0,0.1);
+        }
+        .fullscreen-menu.active { opacity: 1; visibility: visible; transform: translateX(0); }
+        
+        .mobile-link { 
+            display: block; width: 100%; padding: 16px 0;
+            font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-main); text-decoration: none; transition: all 0.3s; 
+            border-bottom: 1px dashed var(--border-color); text-align: left;
+        }
+        .mobile-link:hover { color: var(--accent-color); padding-left: 8px; }
+        [dir="rtl"] .mobile-link { text-align: right; }
+        [dir="rtl"] .mobile-link:hover { padding-left: 0; padding-right: 8px; }
+
+        /* FOOTER */
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding-top: 60px; }
+        footer h4 { color: var(--text-main); font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; } 
+        footer a, footer li, footer span { color: var(--text-muted); text-decoration: none; transition: all 0.3s; font-size: 0.95rem; }
+        footer a:hover { color: var(--accent-color); }
+        .social-link-circle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; transition: all 0.3s; color: var(--text-main); background: var(--bg-card); }
+        .social-link-circle:hover { background: var(--accent-color); color: #FFFFFF; border-color: var(--accent-color); transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid var(--border-color); padding: 24px 0; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
+            
+            <div class="flex items-center flex-1">
+                <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                    EcoWay
+                </a>
+            </div>
+            
+            <div class="hidden xl:flex justify-center items-center gap-2">
+                <div class="dropdown">
+                    <div class="nav-link">Home <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="index.html" class="dropdown-item">Home Page 1</a>
+                            <a href="home-2.html" class="dropdown-item">Home Page 2</a>
+                        </div>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="blog.html" class="nav-link active">Blog</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="dropdown">
+                    <div class="nav-link">Dashboard <i class="fas fa-chevron-down text-[8px] ml-1"></i></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-inner">
+                            <a href="user.html" class="dropdown-item">User Dashboard</a>
+                            <a href="admin.html" class="dropdown-item">Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden xl:flex items-center justify-end flex-1 gap-3">
+                <a href="login.html" class="btn btn-outline !py-2 !px-5 !text-[11px]">Login</a> 
+                <a href="register.html" class="btn btn-solid !py-2 !px-5 !text-[11px]">Register</a>
+                
+                <div class="w-px h-5 bg-[var(--border-color)] mx-2"></div>
+                
+                <button id="rtl-btn" class="text-[9px] font-black text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-secondary)] transition-all uppercase tracking-widest border border-[var(--border-color)] px-2.5 py-1.5 rounded">RTL</button>
+                
+                <div id="theme-toggle-desktop" class="theme-toggle-pill" title="Toggle Dark Mode">
+                    <i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div>
+                </div>
+            </div>
+
+            <div class="xl:hidden flex items-center justify-end flex-1">
+                <button id="mobile-btn" class="w-10 h-10 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-main)] hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <div class="fullscreen-menu" id="fullscreen-menu">
+        <div class="w-full px-6 py-5 flex justify-between items-center border-b border-[var(--border-color)] shrink-0 bg-[var(--bg-secondary)]">
+            <a href="index.html" class="text-xl font-black tracking-tighter" style="color: var(--text-main); text-decoration: none;">
+                EcoWay
+            </a>
+            <button id="close-menu" class="w-8 h-8 rounded border border-[var(--border-color)] flex items-center justify-center hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] transition-all text-lg bg-[var(--bg-card)] text-[var(--text-muted)]">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col items-start justify-start px-6 py-4 w-full overflow-y-auto flex-1">
+            <a href="index.html" class="mobile-link" style="border-top: 1px dashed var(--border-color);">Home Page 1</a>
+            <a href="home-2.html" class="mobile-link">Home Page 2</a>
+            <a href="about.html" class="mobile-link">About</a>
+            <a href="services.html" class="mobile-link">Services</a>
+            <a href="pricing.html" class="mobile-link">Pricing</a>
+            <a href="blog.html" class="mobile-link" style="color: var(--accent-color);">Blog</a>
+            <a href="faq.html" class="mobile-link">FAQ</a>
+            <a href="contact.html" class="mobile-link">Contact</a>
+            
+            <div class="w-full h-4"></div>
+            <span class="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mb-2 block">Portals</span>
+            <a href="user.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">User Dashboard</a>
+            <a href="admin.html" class="mobile-link !text-sm text-[var(--text-muted)] !py-3">Admin Dashboard</a>
+        </div>
+
+        <div class="w-full px-6 py-6 border-t border-[var(--border-color)] flex flex-col gap-5 shrink-0 bg-[var(--bg-secondary)]">
+            <div class="flex justify-between items-center w-full">
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Theme:</span>
+                    <div id="theme-toggle-mobile" class="theme-toggle-pill"><i class="fas fa-sun"></i><i class="fas fa-moon"></i><div class="thumb"></div></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-[var(--text-muted)] font-bold text-[10px] uppercase tracking-widest">Layout:</span>
+                    <button id="rtl-toggle-mobile" class="text-[10px] font-black text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border-color)] px-3 py-1.5 rounded hover:border-[var(--accent-color)] transition-colors">LTR / RTL</button>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-3 w-full mt-2">
+                <a href="login.html" class="btn btn-outline w-full !py-3 rounded">Login</a>
+                <a href="register.html" class="btn btn-solid w-full !py-3 rounded">Register</a>
+            </div>
+        </div>
+    </div>
+    <section class="relative w-full min-h-[60vh] flex flex-col items-center justify-center overflow-hidden pt-32 pb-16">
+        
+        <div class="absolute inset-0 z-0">
+            <img src="images/pexels-shvets-production-7512889.jpg" alt="Blog Post Cover" class="w-full h-full object-cover object-center animate-zoom" />
+            <div class="absolute inset-0 bg-slate-900/80"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-4xl mx-auto px-6 text-center mt-auto mb-auto">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm">
+                <i class="fas fa-newspaper"></i> Industry Insights
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 text-white tracking-tight">
+                The Hidden Environmental Cost of <br class="hidden sm:block">
+                <span style="color: var(--accent-color);">Corporate Hardware Refreshes</span>
+            </h1>
+            
+            <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-slate-300 text-sm font-medium mt-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-600 border border-slate-500 flex items-center justify-center text-xs text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span>By Alex Carter</span>
+                </div>
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-500 hidden sm:block"></span>
+                <div class="flex items-center gap-2">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>October 24, 2026</span>
+                </div>
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-500 hidden sm:block"></span>
+                <div class="flex items-center gap-2">
+                    <i class="far fa-clock"></i>
+                    <span>6 min read</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MAIN BLOG CONTENT -->
+    <main class="w-full max-w-4xl mx-auto px-6 py-16 lg:py-24">
+        
+        <!-- SECTION 1 -->
+        <div class="flex flex-col items-center text-center mb-24">
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] mb-4">The Current Landscape</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-main)] mb-8 tracking-tight">The Mounting Crisis of Electronic Waste</h2>
+            
+            <div class="max-w-3xl">
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-6">
+                    Every year, enterprises across the globe cycle out millions of laptops, servers, and mobile devices in the name of productivity and security. While staying ahead of the technological curve is critical for business continuity, the sheer volume of decommissioned hardware creates a massive, often invisible environmental footprint. 
+                </p>
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-6">
+                    When electronic waste (e-waste) is improperly disposed of, toxic elements like lead, mercury, and cadmium can seep into the soil and groundwater. Furthermore, the precious metals inside these devices—gold, silver, and rare earth elements—are lost forever in landfills, necessitating further environmentally destructive mining operations to build the next generation of electronics.
+                </p>
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-12">
+                    It is no longer enough to simply hand over old servers to a generic recycling vendor. True corporate responsibility demands a transparent, zero-landfill approach where data security and environmental preservation hold equal weight. Without a verifiable chain of custody, companies not only risk data breaches but also unwittingly contribute to the global e-waste epidemic.
+                </p>
+            </div>
+
+            <div class="w-full overflow-hidden rounded-lg shadow-xl border border-[var(--border-color)]">
+                <img src="images/pexels-tima-miroshnichenko-6755079.jpg" alt="Component Recovery" class="w-full h-[500px] object-cover hover:scale-105 transition-transform duration-700">
+            </div>
+            <span class="text-xs font-medium text-[var(--text-muted)] mt-4 block italic">Improperly disposed motherboards and circuit components contribute to global toxic waste.</span>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="w-32 h-1 bg-[var(--accent-color)] mx-auto mb-24 rounded-full opacity-50"></div>
+
+        <!-- SECTION 2 -->
+        <div class="flex flex-col items-center text-center">
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] mb-4">A Better Way Forward</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-main)] mb-8 tracking-tight">Embracing the Circular Economy</h2>
+            
+            <div class="max-w-3xl">
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-6">
+                    The solution to the corporate e-waste problem lies in adopting a circular economic model. This means designing hardware deployment cycles that account for the end-of-life phase before the device is even purchased. Through certified IT Asset Disposition (ITAD) programs, viable electronics can be securely wiped of sensitive data, refurbished, and re-introduced into the secondary market.
+                </p>
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-6">
+                    For equipment that is truly at the end of its useful life, advanced de-manufacturing processes allow us to break down devices to their raw commodities. Plastic is shredded and reformed, while precious metals are smelted and purified to be used again. By keeping these materials in circulation, we drastically reduce the carbon emissions associated with manufacturing new electronics from scratch.
+                </p>
+                <p class="text-[var(--text-muted)] text-lg leading-relaxed mb-12">
+                    As regulations tighten and consumer demand for sustainable practices grows, enterprises must partner with certified experts who can provide detailed sustainability reporting. Knowing exactly how much carbon was offset or how many pounds of toxins were diverted from a landfill gives companies the tangible metrics needed to back up their ESG (Environmental, Social, and Governance) commitments.
+                </p>
+            </div>
+
+            <div class="w-full overflow-hidden rounded-lg shadow-xl border border-[var(--border-color)]">
+                <img src="images/pexels-francesco-ungaro-9953442.jpg" alt="Sustainable environment" class="w-full h-[500px] object-cover hover:scale-105 transition-transform duration-700">
+            </div>
+            <span class="text-xs font-medium text-[var(--text-muted)] mt-4 block italic">Responsible corporate recycling preserves natural ecosystems for future generations.</span>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 pt-4">
+                <div class="lg:col-span-4">
+                    <a href="index.html" class="text-xl lg:text-2xl font-black tracking-tighter mb-6 block" style="color: var(--text-main); text-decoration: none;">
+                        EcoWay
+                    </a>
+                    <p class="opacity-80 leading-relaxed text-sm mb-6 max-w-sm" style="color: var(--text-muted);">
+                        Providing secure IT asset disposition (ITAD) and certified e-waste recycling services for businesses. Protecting your data while protecting our planet.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="social-link-circle"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link-circle"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        <div>
+                            <h4>Client Portal</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Dashboard Login</a></li>
+                                <li><a href="#">Schedule Pickup</a></li>
+                                <li><a href="#">Track Assets</a></li>
+                                <li><a href="#">Compliance Reports</a></li>
+                                <li><a href="#">Certificates of Destruction</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Our Services</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#">Secure Data Destruction</a></li>
+                                <li><a href="#">IT Asset Recovery</a></li>
+                                <li><a href="#">Electronics Recycling</a></li>
+                                <li><a href="#">Battery Disposal</a></li>
+                                <li><a href="#">Corporate Sustainability</a></li>
+                            </ul>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <h4>Corporate Headquarters</h4>
+                            <ul class="space-y-3 text-[var(--text-muted)] text-sm">
+                                <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 shrink-0" style="color: var(--accent-color);"></i><span>100 Innovation Drive<br>Tech Park, CA 94043</span></li>
+                                <li class="flex items-center"><i class="fas fa-phone mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="tel:+18005550199" class="break-all">1-800-555-0199</a></li>
+                                <li class="flex items-center"><i class="fas fa-envelope mr-3 shrink-0" style="color: var(--accent-color);"></i><a href="mailto:support@ecowaste.com" class="break-all">support@ecowaste.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+                <p style="color: var(--text-muted);">&copy; 2026 EcoWay ITAD Services. All rights reserved.</p>
+                <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+                    <a href="#">Security Policy</a>
+                    <a href="#">Environmental Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Drawer Menu Logic
+        const mobileBtn = document.getElementById('mobile-btn'); 
+        const fullscreenMenu = document.getElementById('fullscreen-menu'); 
+        const closeMenu = document.getElementById('close-menu'); 
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        
+        function toggleMenu() { 
+            fullscreenMenu.classList.toggle('active'); 
+            drawerOverlay.classList.toggle('active');
+            document.body.style.overflow = fullscreenMenu.classList.contains('active') ? 'hidden' : 'auto';
+        }
+        
+        mobileBtn.onclick = toggleMenu; 
+        closeMenu.onclick = toggleMenu; 
+        drawerOverlay.onclick = toggleMenu; 
+        
+        // Theme Logic
+        const themeDesktop = document.getElementById('theme-toggle-desktop');
+        const themeMobile = document.getElementById('theme-toggle-mobile'); 
+        const theme = localStorage.getItem('theme') || 'light';
+
+        function updateThemeUI(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode'); 
+                if(themeMobile) themeMobile.classList.add('active');
+            } else {
+                document.body.classList.remove('dark-mode');
+                if(themeMobile) themeMobile.classList.remove('active');
+            }
+        }
+        
+        updateThemeUI(theme === 'dark');
+        
+        function toggleTheme() { 
+            const isDark = !document.body.classList.contains('dark-mode');
+            updateThemeUI(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+        }
+        
+        themeDesktop.onclick = toggleTheme; 
+        if(themeMobile) themeMobile.onclick = toggleTheme;
+        
+        // RTL Logic
+        const rtlBtn = document.getElementById('rtl-btn'); 
+        const rtlMobile = document.getElementById('rtl-toggle-mobile'); 
+        const dir = localStorage.getItem('dir') || 'ltr';
+        
+        if (dir === 'rtl') { 
+            document.documentElement.dir = 'rtl'; 
+        }
+        
+        function toggleRTL() { 
+            const isRTL = document.documentElement.dir === 'rtl'; 
+            document.documentElement.dir = isRTL ? 'ltr' : 'rtl'; 
+            localStorage.setItem('dir', isRTL ? 'ltr' : 'rtl'); 
+        }
+        
+        rtlBtn.onclick = toggleRTL; 
+        if(rtlMobile) rtlMobile.onclick = toggleRTL;
+    </script>
+</body>
+</html>
